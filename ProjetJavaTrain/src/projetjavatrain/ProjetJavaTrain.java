@@ -41,10 +41,6 @@ public class ProjetJavaTrain extends Application {
             RowConstraints rowConst = new RowConstraints(50);
             grille.getRowConstraints().add(rowConst);         
         }
-        
-        if(true){
-            
-        }
 
         // don't forget to add children to gridpane
         grille.getChildren().addAll();
