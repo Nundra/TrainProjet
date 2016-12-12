@@ -42,7 +42,7 @@ public class ProjetJavaTrain extends Application {
             grille.getRowConstraints().add(rowConst);         
         }
         
-        la
+     //   la
 
         // don't forget to add children to gridpane
         grille.getChildren().addAll();
