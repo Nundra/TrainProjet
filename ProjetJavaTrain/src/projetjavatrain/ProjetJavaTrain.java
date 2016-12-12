@@ -11,6 +11,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -41,11 +43,38 @@ public class ProjetJavaTrain extends Application {
             RowConstraints rowConst = new RowConstraints(50);
             grille.getRowConstraints().add(rowConst);         
         }
-        
-        //test de upload
-        
-        // don't forget to add children to gridpane
-        grille.getChildren().addAll();
+            for(int i = 0; i < numCols; i++){
+                Image montagne = new Image("img/montagne.png");
+                ImageView img = new ImageView(montagne);
+                img.setFitWidth(50);
+                img.setPreserveRatio(true);
+                GridPane.setConstraints(img, i, 0);
+                grille.getChildren().addAll(img);
+            }
+            for(int i = 0; i < numCols; i++){
+                Image montagne = new Image("img/montagne.png");
+                ImageView img = new ImageView(montagne);
+                img.setFitWidth(50);
+                img.setPreserveRatio(true);
+                GridPane.setConstraints(img, i, 9);
+                grille.getChildren().addAll(img);
+            }
+            for(int i = 0; i < numRows; i++){
+                Image montagne = new Image("img/montagne.png");
+                ImageView img = new ImageView(montagne);
+                img.setFitWidth(50);
+                img.setPreserveRatio(true);
+                GridPane.setConstraints(img, 0, i);
+                grille.getChildren().addAll(img);
+            }
+            for(int i = 0; i < numRows; i++){
+                Image montagne = new Image("img/montagne.png");
+                ImageView img = new ImageView(montagne);
+                img.setFitWidth(50);
+                img.setPreserveRatio(true);
+                GridPane.setConstraints(img, 14, i);
+                grille.getChildren().addAll(img);
+            }
         
         sp1.getChildren().add(new Button("Button Two"));
         sp2.getChildren().add(grille);
