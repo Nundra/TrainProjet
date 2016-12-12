@@ -76,6 +76,11 @@ public class ProjetJavaTrain extends Application {
                 grille.getChildren().addAll(img);
             }
         
+        //test de upload 2
+        
+        // don't forget to add children to gridpane
+        grille.getChildren().addAll();
+        
         sp1.getChildren().add(new Button("Button Two"));
         sp2.getChildren().add(grille);
         root.getItems().addAll(sp1,sp2);
