@@ -6,19 +6,21 @@
 package projetjavatrain;
 
 import java.util.ArrayList;
+import javafx.scene.image.Image;
 
 /**
  *
  * @author Nundra
  */
-public class Ville {
+public class Ville extends Decors{
     private Bien typeRessource;
     private ArrayList<Bien> stock;
     private int vitesse;
     private int lvl;
-    
-    public Ville(Bien b){
-        typeRessource = b;
+
+    public Ville(int x, int y, Image img, boolean b, Bien bien) {
+        super(x, y, img, b);
+        typeRessource = bien;
         stock = new ArrayList<>();
         vitesse = 1;
         lvl = 1;

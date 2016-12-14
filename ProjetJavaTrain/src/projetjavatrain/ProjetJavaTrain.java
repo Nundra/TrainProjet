@@ -7,12 +7,15 @@ package projetjavatrain;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -43,44 +46,42 @@ public class ProjetJavaTrain extends Application {
             RowConstraints rowConst = new RowConstraints(50);
             grille.getRowConstraints().add(rowConst);         
         }
-            for(int i = 0; i < numCols; i++){
-                Image montagne = new Image("img/montagne.png");
-                ImageView img = new ImageView(montagne);
-                img.setFitWidth(50);
-                img.setPreserveRatio(true);
-                GridPane.setConstraints(img, i, 0);
-                grille.getChildren().addAll(img);
-            }
-            for(int i = 0; i < numCols; i++){
-                Image montagne = new Image("img/montagne.png");
-                ImageView img = new ImageView(montagne);
-                img.setFitWidth(50);
-                img.setPreserveRatio(true);
-                GridPane.setConstraints(img, i, 9);
-                grille.getChildren().addAll(img);
-            }
-            for(int i = 0; i < numRows; i++){
-                Image montagne = new Image("img/montagne.png");
-                ImageView img = new ImageView(montagne);
-                img.setFitWidth(50);
-                img.setPreserveRatio(true);
-                GridPane.setConstraints(img, 0, i);
-                grille.getChildren().addAll(img);
-            }
-            for(int i = 0; i < numRows; i++){
-                Image montagne = new Image("img/montagne.png");
-                ImageView img = new ImageView(montagne);
-                img.setFitWidth(50);
-                img.setPreserveRatio(true);
-                GridPane.setConstraints(img, 14, i);
-                grille.getChildren().addAll(img);
-            }
         
-        //test de upload 2
-        
-        // don't forget to add children to gridpane
-        grille.getChildren().addAll();
-        
+        Image montagne = new Image("img/montagne.png");
+    
+        for(int i = 0; i<numCols; i++){
+            for(int j = 0; j<numRows; j++){
+                //placement montagne
+                if(
+                    (i==10 && j==2) || (i==10 && j==3) || (i==11 && j==3) || (i==11 && j==2)
+                     || (i==5 && j==5) || (i==0) || (i==14) || (j==0) || (j==9)
+                        ){
+                            Decors m = new Decors(i,j,montagne,false);
+                            ImageView img = new ImageView(montagne);
+                            GridPane.setConstraints(img, i, j);
+                            grille.getChildren().add(img);
+                }
+                //placement plaine
+                
+                //placement ville
+            }
+        }
+        grille.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent e) {
+
+                for( Node node: grille.getChildren()) {
+
+                    if( node instanceof Label) {
+                        if( node.getBoundsInParent().contains(e.getSceneX(),  e.getSceneY())) {
+                            System.out.println( "Node: " + node + " at " + GridPane.getRowIndex( node) + "/" + GridPane.getColumnIndex( node));
+                        }
+                    }
+                }
+            }
+        });
+
+                
         sp1.getChildren().add(new Button("Button Two"));
         sp2.getChildren().add(grille);
         root.getItems().addAll(sp1,sp2);
