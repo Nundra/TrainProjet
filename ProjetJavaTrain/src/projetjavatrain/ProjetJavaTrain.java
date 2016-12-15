@@ -5,8 +5,12 @@
  */
 package projetjavatrain;
 
+import static com.sun.java.accessibility.util.AWTEventMonitor.addMouseListener;
+import java.util.ArrayList;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -26,15 +30,29 @@ import javafx.stage.Stage;
  *
  * @author Nundra
  */
-public class ProjetJavaTrain extends Application {
+public class ProjetJavaTrain extends Application implements Observateur{
+    TrainModel tm = new TrainModel();
+    SplitPane root = new SplitPane();
+    StackPane sp1 = new StackPane();
+    StackPane sp2 = new StackPane();
+    GridPane grille = new GridPane();
+    
+    public void initMap(int numCols, int numRows, GridPane grille){
+        for(int i = 0; i<numCols; i++){
+            for(int j = 0; j<numRows; j++){
+                Decors d = tm.getDecors(i, j);
+                ImageView img = new ImageView(d.getImg());
+                img.setFitWidth(50);
+                img.setPreserveRatio(true);
+                GridPane.setConstraints(img, i, j);
+                grille.getChildren().add(img);
+                img.setOnMouseClicked(new CaseControler(i,j,tm));
+            }
+        }
+    }
     
     @Override
     public void start(Stage primaryStage) {
-        SplitPane root = new SplitPane();
-        StackPane sp1 = new StackPane();
-        StackPane sp2 = new StackPane();
-        
-        GridPane grille = new GridPane();
         grille.setGridLinesVisible(true);
         int numCols = 15 ;
         int numRows = 10 ;
@@ -47,42 +65,11 @@ public class ProjetJavaTrain extends Application {
             grille.getRowConstraints().add(rowConst);         
         }
         
-        Image montagne = new Image("img/montagne.png");
-    
-        for(int i = 0; i<numCols; i++){
-            for(int j = 0; j<numRows; j++){
-                //placement montagne
-                if(
-                    (i==10 && j==2) || (i==10 && j==3) || (i==11 && j==3) || (i==11 && j==2)
-                     || (i==5 && j==5) || (i==0) || (i==14) || (j==0) || (j==9)
-                        ){
-                            Decors m = new Decors(i,j,montagne,false);
-                            ImageView img = new ImageView(montagne);
-                            GridPane.setConstraints(img, i, j);
-                            grille.getChildren().add(img);
-                }
-                //placement plaine
-                
-                //placement ville
-            }
-        }
-        grille.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-
-                for( Node node: grille.getChildren()) {
-
-                    if( node instanceof Label) {
-                        if( node.getBoundsInParent().contains(e.getSceneX(),  e.getSceneY())) {
-                            System.out.println( "Node: " + node + " at " + GridPane.getRowIndex( node) + "/" + GridPane.getColumnIndex( node));
-                        }
-                    }
-                }
-            }
-        });
-
-                
-        sp1.getChildren().add(new Button("Button Two"));
+        initMap(numCols,numRows,grille);
+        
+        Button bt = new Button("Construction");
+        bt.setOnAction(new btConsControler(tm,bt));
+        sp1.getChildren().add(bt);
         sp2.getChildren().add(grille);
         root.getItems().addAll(sp1,sp2);
         Scene scene = new Scene(root, 1200, 500);
@@ -90,6 +77,8 @@ public class ProjetJavaTrain extends Application {
         primaryStage.setTitle("Train Simulator 2017");
         primaryStage.setScene(scene);
         primaryStage.show();
+        
+        tm.register(this);
     }
 
     /**
@@ -97,6 +86,16 @@ public class ProjetJavaTrain extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    @Override
+    public void avertir(int i, int j) {
+            Decors d = tm.getDecors(i, j);
+            ImageView img = new ImageView(d.getImg());
+            img.setFitWidth(50);
+            img.setPreserveRatio(true);
+            GridPane.setConstraints(img, i, j);
+            grille.getChildren().add(img);
     }
     
 }

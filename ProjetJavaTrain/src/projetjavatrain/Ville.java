@@ -18,9 +18,8 @@ public class Ville extends Decors{
     private int vitesse;
     private int lvl;
 
-    public Ville(int x, int y, Image img, boolean b, Bien bien) {
+    public Ville(int x, int y, Image img, boolean b) {
         super(x, y, img, b);
-        typeRessource = bien;
         stock = new ArrayList<>();
         vitesse = 1;
         lvl = 1;
