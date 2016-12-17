@@ -30,11 +30,15 @@ public class btConsControler implements EventHandler {
             model.setMode("game");
             bt.setText("Construction");
             on = false;
+            model.finConstruction();
         }else{
+            System.out.println("construction started");
             model.setMode("construction");
-            bt.setText("Cancel");
+            bt.setText("Fin");
             on = true;
+            model.startConstruction();
         }
+        model.avertirAllObservateurs();
     }
     
 }

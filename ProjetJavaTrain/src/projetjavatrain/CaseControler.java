@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.image.ImageView;
 
 /**
  *
@@ -18,20 +19,24 @@ public class CaseControler implements EventHandler {
     int i;
     int j;
     private TrainModel model;
+    private ImageView img;
 
-    public CaseControler(int _i, int _j, TrainModel m) {
+    public CaseControler(int _i, int _j, TrainModel m, ImageView img) {
         this.i = _i;
         this.j = _j;
         this.model=m;
+        this.img=img;
     }
 
     @Override
     public void handle(Event event) {
+        System.out.println("Case cliqué : "+model.getCase(i, j));
+        System.out.println("pose cliqué : "+i+" "+j);
+        System.out.println("pose valide : "+model.getDecors(i, j).isValide());
         if(model.getMode().equals("construction")){
-            if(model.getDecors(i, j).isEditable()){
+            if(model.getDecors(i, j).isEditable() && model.getCase(i, j)==0){
                 model.poserRail(i, j);
-            }
-            if(model.getCase(i, j)==3){
+            }else if(model.getDecors(i, j).isEditable() && model.getCase(i, j)==3){
                 model.retirerRail(i, j);
             }
         }

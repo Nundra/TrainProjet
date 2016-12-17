@@ -5,10 +5,12 @@
  */
 package projetjavatrain;
 
+import javafx.scene.image.ImageView;
+
 /**
  *
  * @author Nundra
  */
 public interface Observateur {
-    public abstract void avertir(int i, int j);
+    public abstract void avertir();
 }

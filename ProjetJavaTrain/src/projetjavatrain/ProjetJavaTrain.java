@@ -36,8 +36,10 @@ public class ProjetJavaTrain extends Application implements Observateur{
     StackPane sp1 = new StackPane();
     StackPane sp2 = new StackPane();
     GridPane grille = new GridPane();
+    int numCols = 15 ;
+    int numRows = 10 ;
     
-    public void initMap(int numCols, int numRows, GridPane grille){
+    public void initMap(){
         for(int i = 0; i<numCols; i++){
             for(int j = 0; j<numRows; j++){
                 Decors d = tm.getDecors(i, j);
@@ -46,16 +48,13 @@ public class ProjetJavaTrain extends Application implements Observateur{
                 img.setPreserveRatio(true);
                 GridPane.setConstraints(img, i, j);
                 grille.getChildren().add(img);
-                img.setOnMouseClicked(new CaseControler(i,j,tm));
+                img.setOnMouseClicked(new CaseControler(i,j,tm,img));
             }
         }
     }
     
     @Override
     public void start(Stage primaryStage) {
-        grille.setGridLinesVisible(true);
-        int numCols = 15 ;
-        int numRows = 10 ;
         for (int i = 0; i < numCols; i++) {
             ColumnConstraints colConst = new ColumnConstraints(50);
             grille.getColumnConstraints().add(colConst);
@@ -65,7 +64,7 @@ public class ProjetJavaTrain extends Application implements Observateur{
             grille.getRowConstraints().add(rowConst);         
         }
         
-        initMap(numCols,numRows,grille);
+        initMap();
         
         Button bt = new Button("Construction");
         bt.setOnAction(new btConsControler(tm,bt));
@@ -87,15 +86,25 @@ public class ProjetJavaTrain extends Application implements Observateur{
     public static void main(String[] args) {
         launch(args);
     }
+    
+    public void update(){
+        grille.getChildren().clear();
+        initMap();
+    }
+    
 
     @Override
-    public void avertir(int i, int j) {
-            Decors d = tm.getDecors(i, j);
-            ImageView img = new ImageView(d.getImg());
-            img.setFitWidth(50);
-            img.setPreserveRatio(true);
-            GridPane.setConstraints(img, i, j);
-            grille.getChildren().add(img);
+    public void avertir() {
+        update();
     }
+    
+    private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
+    for (Node node : gridPane.getChildren()) {
+        if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
+            return node;
+        }
+    }
+    return null;
+}
     
 }

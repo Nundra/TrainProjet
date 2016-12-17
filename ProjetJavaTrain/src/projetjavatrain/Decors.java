@@ -16,12 +16,14 @@ public class Decors {
     private int y;
     private Image img;
     private boolean editable;
+    private boolean valide;
     
     public Decors(int x, int y, Image img, boolean b){
         this.x=x;
         this.y=y;
         this.img=img;
         this.editable=b;
+        valide = false;
     }
 
     /**
@@ -57,5 +59,26 @@ public class Decors {
      */
     public void setImg(Image img) {
         this.img = img;
+    }
+
+    /**
+     * @param editable the editable to set
+     */
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
+
+    /**
+     * @return the valide
+     */
+    public boolean isValide() {
+        return valide;
+    }
+
+    /**
+     * @param valide the valide to set
+     */
+    public void setValide(boolean valide) {
+        this.valide = valide;
     }
 }
