@@ -90,9 +90,9 @@ public class TrainModel {
         }
     }
     
-    ArrayList<Decors> testRailTemp = new ArrayList<>();
-    ArrayList<Decors> testRailFinal = new ArrayList<>();
-        
+    ArrayList<Rail> testRailTemp = new ArrayList<>();
+    ArrayList<Rail> testRailFinal = new ArrayList<>();
+    
     public void finConstruction(){
         for(int i = 0; i<15; i++){
             for(int j = 0; j<10; j++){
@@ -100,17 +100,29 @@ public class TrainModel {
                         getDecors(i,j).setImg(plaine);
                 }
                 if(getCase(i,j)==2){
-                        if(board[i][j-1]==3)if(getDecors(i,j-1).isValide()==false)testLigne(i,j-1,0);
-                        if(board[i][j+1]==3)if(getDecors(i,j+1).isValide()==false)testLigne(i,j+1,0);
-                        if(board[i-1][j]==3)if(getDecors(i-1,j).isValide()==false)testLigne(i-1,j,0);
-                        if(board[i+1][j]==3)if(getDecors(i+1,j).isValide()==false)testLigne(i+1,j,0);
+                        if(board[i][j-1]==3){
+                            Rail r = (Rail) getDecors(i,j-1);
+                            testLigne(i,j-1,false);
+                        }
+                        if(board[i][j+1]==3){
+                            Rail r = (Rail) getDecors(i,j+1);
+                            testLigne(i,j+1,false);
+                        }
+                        if(board[i-1][j]==3){
+                            Rail r = (Rail) getDecors(i-1,j);
+                            testLigne(i-1,j,false);
+                        }
+                        if(board[i+1][j]==3){
+                            Rail r = (Rail) getDecors(i+1,j);
+                            testLigne(i+1,j,false);
+                        }
                 }
             }
         }
         
         for(int i = 0; i<15; i++){
             for(int j = 0; j<10; j++){
-                if((getCase(i,j)==3) && (getDecors(i,j).isValide()==false)){
+                if(getCase(i,j)==3){
                     listeDecors.remove(getDecors(i,j));
                     Decors d = new Plaine(i,j,plaine,true);
                     listeDecors.add(d);
@@ -120,112 +132,122 @@ public class TrainModel {
         }
     }
     
-    public void testLigne(int i, int j, int ville){
-        int compteur = 0;
-        int nbrVille = ville;
-        int iT = 0;
-        int jT = 0;
+    public void testLigne(int _i, int _j, boolean bool){
+        boolean close = bool;
+        int i = _i;
+        int j = _j;
+        Rail r = (Rail) getDecors(i,j);
         
-        
-            if(board[i][j-1] == 2 || board[i][j+1] == 2 || board[i+1][j] == 2 || board[i-1][j] == 2){
-                compteur++;
-                nbrVille++;
-            }
-            
-            if(board[i][j-1] == 3){
-                compteur++;
-                Decors d = getDecors(i,j);
-                d.setValide(true);
-                testRailTemp.add(d);
-                if(getDecors(i,j-1).isValide() == false){ 
-                    iT = i;
-                    jT = j-1;
+        while(close == false){
+            r = (Rail) getDecors(i,j);
+            testRailTemp.add(r);
+            int[] c = r.getChemin();
+            if(c[0]==c[2] && c[1]==c[3]){
+                if(board[i][j-1]==2 || board[i][j+1]==2 || board[i-1][j]==2 || board[i+1][j]==2){
+                    close = true;
+                }else{
+                    break;
                 }
-            }
-            if(board[i][j+1] == 3){
-                compteur++;
-                Decors d = getDecors(i,j);
-                d.setValide(true);
-                testRailTemp.add(d);
-                if(getDecors(i,j+1).isValide() == false){ 
-                    iT = i;
-                    jT = j+1;
-                }
-            }
-            if(board[i+1][j] == 3){
-                compteur++;
-                Decors d = getDecors(i,j);
-                d.setValide(true);
-                testRailTemp.add(d);
-                if(getDecors(i+1,j).isValide() == false){ 
-                    iT = i+1;
-                    jT = j;
-                }
-            }
-            if(board[i-1][j] == 3){
-                compteur++;
-                Decors d = getDecors(i,j);
-                d.setValide(true);
-                testRailTemp.add(d);
-                if(getDecors(i-1,j).isValide() == false){ 
-                    iT = i-1;
-                    jT = j;
-                }
-            }
-            
-            System.out.println(""+compteur);
-            System.out.println(""+nbrVille);
-            
-            if(nbrVille == 2){
-                for(Decors dTemp:testRailTemp){
-                    testRailFinal.add(dTemp);
-                }
-                compteur = 0;
-                testRailTemp.clear();
-            }
-            if(compteur == 2){
-                testLigne(iT,jT,nbrVille);
             }else{
-                for(Decors dTemp:testRailTemp){
-                    dTemp.setValide(false);
+                    i = c[2];
+                    j = c[3];
+                }
+        }
+        
+        if(close){
+            r.newId();
+            for(Rail dTemp: testRailTemp){
+                testRailFinal.add(dTemp);
+                dTemp.updateId();
+                board[dTemp.getX()][dTemp.getY()] = 5;
+            }
+            testRailTemp.clear();
+        }else{
+                for(Rail dTemp:testRailTemp){
+                    board[dTemp.getX()][dTemp.getY()] = 3;
                 }
                 testRailTemp.clear();
             }
+        
     }
     
     public void poserRail(int i, int j){
         listeDecors.remove(getDecors(i,j));
-        Decors d = new Rail(i,j,orienterRail(i,j),true);
+        Rail d = new Rail(i,j,orienterRail(i,j),true);
         listeDecors.add(d);
         board[i][j] = 3;
         setCaseAutour(i,j,true);
             if(board[i-1][j]==3){
+                d.setupChemin(i-1, j, i-1, j);
                 setCaseAutour(i-1,j,false);
-                getDecors(i-1,j).setEditable(false);
-                    if(board[i-1][j-1] == 3 || board[i-1][j-1] == 2)getDecors(i-1,j).setImg(railDH);
-                    if(board[i-1][j+1] == 3 || board[i-1][j+1] == 2)getDecors(i-1,j).setImg(railBD);
-                    if(board[i-2][j] == 3 || board[i-2][j] == 2)getDecors(i-1,j).setImg(railH);
+                Rail d2 = (Rail) getDecors(i-1,j);
+                d2.setEditable(false);
+                    if(board[i-1][j-1] == 3 || board[i-1][j-1] == 2){
+                        d2.setImg(railDH);
+                        d2.setupChemin(i-1,j-1,i,j);
+                    }
+                    if(board[i-1][j+1] == 3 || board[i-1][j+1] == 2){
+                        d2.setImg(railBD);
+                        d2.setupChemin(i-1,j+1,i,j);
+                    }
+                    if(board[i-2][j] == 3 || board[i-2][j] == 2){
+                        d2.setImg(railH);
+                        d2.setupChemin(i-2,j,i,j);
+                    }
             }
             if(board[i+1][j]==3){
+                d.setupChemin(i+1, j, i+1, j);
                 setCaseAutour(i+1,j,false);
-                getDecors(i+1,j).setEditable(false);
-                    if(board[i+1][j-1] == 3 || board[i+1][j-1] == 2)getDecors(i+1,j).setImg(railGH);
-                    if(board[i+1][j+1] == 3 || board[i+1][j+1] == 2)getDecors(i+1,j).setImg(railBG);
-                    if(board[i+2][j] == 3 || board[i+2][j] == 2)getDecors(i+1,j).setImg(railH);
+                Rail d2 = (Rail) getDecors(i+1,j);
+                d2.setEditable(false);
+                    if(board[i+1][j-1] == 3 || board[i+1][j-1] == 2){
+                        d2.setImg(railGH);
+                        d2.setupChemin(i+1,j-1,i,j);
+                    }
+                    if(board[i+1][j+1] == 3 || board[i+1][j+1] == 2){
+                        d2.setImg(railBG);
+                        d2.setupChemin(i+1,j+1,i,j);
+                    }
+                    if(board[i+2][j] == 3 || board[i+2][j] == 2){
+                        d2.setImg(railH);
+                        d2.setupChemin(i+2,j,i,j);
+                    }
             }
             if(board[i][j-1]==3){
+                d.setupChemin(i, j-1, i, j-1);
                 setCaseAutour(i,j-1,false);
-                getDecors(i,j-1).setEditable(false);
-                    if(board[i-1][j-1] == 3 || board[i-1][j-1] == 2)getDecors(i,j-1).setImg(railBG);
-                    if(board[i+1][j-1] == 3 || board[i+1][j-1] == 2)getDecors(i,j-1).setImg(railBD);
-                    if(board[i][j-2] == 3 || board[i][j-2] == 2)getDecors(i,j-1).setImg(railV);
+                Rail d2 = (Rail) getDecors(i,j-1);
+                d2.setEditable(false);
+                    if(board[i-1][j-1] == 3 || board[i-1][j-1] == 2){
+                        d2.setImg(railBG);
+                        d2.setupChemin(i-1,j-1,i,j);
+                    }
+                    if(board[i+1][j-1] == 3 || board[i+1][j-1] == 2){
+                        d2.setImg(railBD);
+                        d2.setupChemin(i+1,j-1,i,j);
+                    }
+                    if(board[i][j-2] == 3 || board[i][j-2] == 2){
+                        d2.setImg(railV);
+                        d2.setupChemin(i,j-2,i,j);
+                    }
             }
             if(board[i][j+1]==3){
+                d.setupChemin(i, j+1, i, j+1);
                 setCaseAutour(i,j+1,false);
-                getDecors(i,j+1).setEditable(false);
-                    if(board[i-1][j+1] == 3 || board[i-1][j+1] == 2)getDecors(i,j+1).setImg(railGH);
-                    if(board[i+1][j+1] == 3 || board[i+1][j+1] == 2)getDecors(i,j+1).setImg(railDH);
-                    if(board[i][j+2] == 3 || board[i][j+2] == 2)getDecors(i,j+1).setImg(railV);
+                Rail d2 = (Rail) getDecors(i,j+1);
+                d2.setEditable(false);
+                    if(board[i-1][j+1] == 3 || board[i-1][j+1] == 2){
+                        d2.setImg(railGH);
+                        d2.setupChemin(i-1,j+1,i,j);
+                    }
+                    if(board[i+1][j+1] == 3 || board[i+1][j+1] == 2){
+                        d2.setImg(railDH);
+                        d2.setupChemin(i+1,j+1,i,j);
+                    }
+                    if(board[i][j+2] == 3 || board[i][j+2] == 2){
+                        d2.setImg(railV);
+                        d2.setupChemin(i,j+2,i,j);
+                    }
             }
         avertirAllObservateurs();
     }

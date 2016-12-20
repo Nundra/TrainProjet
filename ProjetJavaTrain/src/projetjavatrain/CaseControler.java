@@ -40,6 +40,10 @@ public class CaseControler implements EventHandler {
                 model.retirerRail(i, j);
             }
         }
+        if(model.getCase(i, j)==5){
+            Rail r = (Rail) model.getDecors(i, j);
+            System.out.println("id rail : "+r.getId());
+        }
     }
 }
 /*new EventHandler<MouseEvent>()
