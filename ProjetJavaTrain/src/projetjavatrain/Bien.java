@@ -16,12 +16,38 @@ public class Bien {
     private int quantite;
     private int valeur;
     private ArrayList<Bien> composant;
+    private ArrayList<Integer> composantQt;
     
     public Bien(String _n, int _q, int _v){
         composant = new ArrayList<>();
+        composantQt = new ArrayList<>();
         nom = _n;
         quantite = _q;
         valeur = _v;
+    }
+    
+    @Override
+    public String toString(){
+        return nom+" "+quantite;
+    }
+    
+    public void addComposant(Bien b,int qt){
+        composant.add(b);
+        composantQt.add(qt);
+    }
+    
+    public void estFaisable(Ville v){
+        //bool b = false;
+        for(Bien b:composant){
+            for(Bien b2:v.getStock()){
+                if(b == b2){
+                    if(b2.quantite == composantQt.get(composant.indexOf(b))){
+                        System.out.println("COMPOSANT OK");
+                    }
+                }
+            }
+        }
+        //return false;
     }
     
     /**
@@ -50,5 +76,13 @@ public class Bien {
      */
     public void setQuantite(int quantite) {
         this.quantite = quantite;
+    }
+
+    void produire() {
+        this.quantite++;
+    }
+    
+    void reset(){
+        this.quantite = 1;
     }
 }

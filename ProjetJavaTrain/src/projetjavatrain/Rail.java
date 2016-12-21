@@ -36,6 +36,10 @@ public class Rail extends Decors{
         idTotal++;
     }
     
+    public static void resetId(){
+        idTotal = 0;
+    }
+    
     /**
      * @return the id
      */

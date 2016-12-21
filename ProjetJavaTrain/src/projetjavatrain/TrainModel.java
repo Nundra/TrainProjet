@@ -7,9 +7,14 @@ package projetjavatrain;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.util.Duration;
+import static projetjavatrain.ProjetJavaTrain.tm;
 
 /**
  *
@@ -19,6 +24,8 @@ public class TrainModel {
     private int board[][];
     private String mode;
     private ArrayList<Decors> listeDecors = new ArrayList<>();
+    private ArrayList<Ville> listeVille = new ArrayList<>();
+    private ArrayList<Train> listeTrain = new ArrayList<>();
     ArrayList<Observateur> obs;
     
     Image montagne = new Image("img/montagne.png");
@@ -31,11 +38,39 @@ public class TrainModel {
     Image railDH = new Image("img/railDH.png");
     Image railGH = new Image("img/railGH.png");
     Image valid = new Image("img/valid.png");
+    Image train = new Image("img/train.png");
+    
+    private Bien lait = new Bien("lait",1,10);
+    private Bien plastique = new Bien("plastique",1,10);
+    private Bien pot = new Bien("pot",10,20);
+    
+    private ArrayList<Bien> listeBien = new ArrayList<>();
+    ArrayList<Rail> dTemp = new ArrayList<>();
     
     public TrainModel(){
+        for(int i = 0; i < 8; i++){
+            dTemp.add(null);
+        }
+    
         this.obs = new ArrayList<>();
         this.mode = "game";
         this.board = new int [15][10];
+        listeBien.add(lait);
+        listeBien.add(plastique);
+        listeBien.add(null);
+        pot.addComposant(plastique, 10);
+    }
+    
+    public void newGame(){
+        this.mode="game";
+        this.board = new int [15][10];
+        int compteur = 0;
+        
+        listeVille.clear();
+        
+        for(Bien b:listeBien){
+            if(b != null)b.reset();
+        }
         
         for(int i = 0; i<15; i++){
             for(int j = 0; j<10; j++){
@@ -52,8 +87,10 @@ public class TrainModel {
                 //placement ville
                     (i==10 && j==5) || (i==6 && j==7 ) || (i==4 && j==3)
                         ){
-                            m = new Decors(i,j,ville,false);
+                            m = new Ville(i,j,ville,false,listeBien.get(compteur));
+                            compteur++;
                             listeDecors.add(m);
+                            listeVille.add((Ville) m);
                             board[i][j] = 2;
                 }else
                 //placement plaine
@@ -64,6 +101,9 @@ public class TrainModel {
                 }
             }
         }
+        btConsControler.reset();
+        Rail.resetId();
+        avertirAllObservateurs();
     }
     
     public void register(Observateur o){
@@ -162,6 +202,9 @@ public class TrainModel {
                 board[dTemp.getX()][dTemp.getY()] = 5;
             }
             testRailTemp.clear();
+            Train t = new Train(i,j,train,false,r.getId());
+            listeTrain.add(t);
+            poserTrain((Train) t,i,j);
         }else{
                 for(Rail dTemp:testRailTemp){
                     board[dTemp.getX()][dTemp.getY()] = 3;
@@ -169,6 +212,87 @@ public class TrainModel {
                 testRailTemp.clear();
             }
         
+    }
+    
+    
+    
+    public void poserTrain(Train t, int i, int j){
+        dTemp.set(t.getIdLigne(),(Rail) getDecors(i,j));
+        listeDecors.remove(dTemp.get(t.getIdLigne()));
+        listeDecors.add(t);
+        board[i][j]=10;
+        avertirAllObservateurs();
+    }
+    
+    public void bougerTrain(){
+        int x = 0;
+        int y = 0;
+        for(int i = 0; i<15; i++){
+            for(int j = 0; j<10; j++){
+                if(getCase(i,j)==10){
+                    Train t = (Train) getDecors(i,j);
+                    if(t.estDeplace() == false){
+                        System.out.println("new sens ="+t.getNewSens());
+                        if( ( getCase(i+1,j) == t.getSens() ) && ( ((Rail) getDecors(i+1,j)).getId() == t.getIdLigne() ) ){
+                            x = i+1;y=j;
+                            listeDecors.remove(getDecors(i,j));
+                            listeDecors.add(dTemp.get(t.getIdLigne()));
+                            board[i][j] = t.getNewSens();
+                            dTemp.set(t.getIdLigne(),(Rail) getDecors(x,y));
+                            listeDecors.remove(dTemp.get(t.getIdLigne()));
+                            t.setX(x);
+                            t.setY(y);
+                            board[x][y]=10;
+                            listeDecors.add(t);
+                            avertirAllObservateurs();
+                        }else if( ( getCase(i-1,j) == t.getSens() ) && ( ((Rail) getDecors(i-1,j)).getId() == t.getIdLigne() ) ){
+                            x = i-1;y=j;
+                            listeDecors.remove(getDecors(i,j));
+                            listeDecors.add(dTemp.get(t.getIdLigne()));
+                            board[i][j] = t.getNewSens();
+                            dTemp.set(t.getIdLigne(),(Rail) getDecors(x,y));
+                            listeDecors.remove(dTemp.get(t.getIdLigne()));
+                            t.setX(x);
+                            t.setY(y);
+                            board[x][y]=10;
+                            listeDecors.add(t);
+                            avertirAllObservateurs();
+                        }else if( ( getCase(i,j+1) == t.getSens() ) && ( ((Rail) getDecors(i,j+1)).getId() == t.getIdLigne() ) ){
+                            x = i;y=j+1;
+                            listeDecors.remove(getDecors(i,j));
+                            listeDecors.add(dTemp.get(t.getIdLigne()));
+                            board[i][j] = t.getNewSens();
+                            dTemp.set(t.getIdLigne(),(Rail) getDecors(x,y));
+                            listeDecors.remove(dTemp.get(t.getIdLigne()));
+                            t.setX(x);
+                            t.setY(y);
+                            board[x][y]=10;
+                            listeDecors.add(t);
+                            avertirAllObservateurs();
+                        }else if( ( getCase(i,j-1) == t.getSens() ) && ( ((Rail) getDecors(i,j-1)).getId() == t.getIdLigne() ) ){
+                            x = i;y=j-1;
+                            listeDecors.remove(getDecors(i,j));
+                            listeDecors.add(dTemp.get(t.getIdLigne()));
+                            board[i][j] = t.getNewSens();
+                            dTemp.set(t.getIdLigne(),(Rail) getDecors(x,y));
+                            listeDecors.remove(dTemp.get(t.getIdLigne()));
+                            t.setX(x);
+                            t.setY(y);
+                            board[x][y]=10;
+                            listeDecors.add(t);
+                            avertirAllObservateurs();
+                        }else if(getCase(i+1,j)==2 || getCase(i-1,j)==2 || getCase(i,j+1)==2 || getCase(i,j-1)==2){
+                            t.changerSens();
+                            System.out.println("tombé sur une ville");
+                        }
+                        t.setDeplace(true);
+                    }
+                }
+            }
+        }
+        for(Train t:listeTrain){
+            t.setDeplace(false);
+        }
     }
     
     public void poserRail(int i, int j){
@@ -323,9 +447,36 @@ public class TrainModel {
     }
     
     public Image orienterRail(int i, int j){
-        if(board[i-1][j] == 2 || board[i+1][j] == 2)return railH;
+        if(board[i-1][j] == 2){
+            if(board[i][j-1]==3){
+                return railGH;
+            }else if(board[i][j+1]==3){
+                return railBG;
+            }else return railH;
+        }
+        if(board[i+1][j] == 2){
+            if(board[i][j-1]==3){
+                return railDH;
+            }else if(board[i][j+1]==3){
+                return railBD;
+            }else return railH;
+        }
+        if(board[i][j-1] == 2){
+            if(board[i-1][j]==3){
+                return railGH;
+            }else if(board[i+1][j]==3){
+                return railDH;
+            }else return railV;
+        }
+        if(board[i][j+1] == 2){
+            if(board[i-1][j]==3){
+                return railBG;
+            }else if(board[i+1][j]==3){
+                return railBD;
+            }else return railV;
+        }
         if(board[i-1][j] == 3 || board[i+1][j] == 3)return railH;
-        return railV;
+            return railV;
     }
     
     public Decors getDecors(int i, int j){
@@ -352,6 +503,13 @@ public class TrainModel {
      */
     public void setMode(String mode) {
         this.mode = mode;
+    }
+
+    /**
+     * @return the listeVille
+     */
+    public ArrayList<Ville> getListeVille() {
+        return listeVille;
     }
     
     

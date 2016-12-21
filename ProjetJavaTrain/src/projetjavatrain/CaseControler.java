@@ -31,8 +31,8 @@ public class CaseControler implements EventHandler {
     @Override
     public void handle(Event event) {
         System.out.println("Case cliqué : "+model.getCase(i, j));
-        System.out.println("pose cliqué : "+i+" "+j);
-        System.out.println("pose valide : "+model.getDecors(i, j).isValide());
+        //System.out.println("pose cliqué : "+i+" "+j);
+        //System.out.println("pose valide : "+model.getDecors(i, j).isValide());
         if(model.getMode().equals("construction")){
             if(model.getDecors(i, j).isEditable() && model.getCase(i, j)==0){
                 model.poserRail(i, j);
@@ -42,7 +42,7 @@ public class CaseControler implements EventHandler {
         }
         if(model.getCase(i, j)==5){
             Rail r = (Rail) model.getDecors(i, j);
-            System.out.println("id rail : "+r.getId());
+            //System.out.println("id rail : "+r.getId());
         }
     }
 }

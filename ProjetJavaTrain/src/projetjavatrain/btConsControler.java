@@ -15,13 +15,18 @@ import javafx.scene.control.Button;
  */
 public class btConsControler implements EventHandler {
     private TrainModel model;
-    Button bt;
-    Boolean on;
+    private static Button bt;
+    private static Boolean on;
     
     public btConsControler(TrainModel m, Button bt) {
         this.model=m;
         this.bt=bt;
         this.on = false;
+    }
+    
+    public static void reset(){
+        on = false;
+        bt.setText("Construction");
     }
     
     @Override

@@ -5,39 +5,43 @@
  */
 package projetjavatrain;
 
-import static com.sun.java.accessibility.util.AWTEventMonitor.addMouseListener;
 import java.util.ArrayList;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  *
  * @author Nundra
  */
 public class ProjetJavaTrain extends Application implements Observateur{
-    TrainModel tm = new TrainModel();
+    static TrainModel tm = new TrainModel();
     SplitPane root = new SplitPane();
     StackPane sp1 = new StackPane();
     StackPane sp2 = new StackPane();
     GridPane grille = new GridPane();
+    VBox v1 = new VBox(2);
+    HBox h1 = new HBox(2);
     int numCols = 15 ;
     int numRows = 10 ;
+    
+    static Timeline timeline = null;
+        
     
     public void initMap(){
         for(int i = 0; i<numCols; i++){
@@ -64,11 +68,17 @@ public class ProjetJavaTrain extends Application implements Observateur{
             grille.getRowConstraints().add(rowConst);         
         }
         
-        initMap();
+        Label l = new Label("Train Simulator 2017");
+        v1.getChildren().add(l);
+        Button bt1 = new Button("Construction");
+        bt1.setOnAction(new btConsControler(tm,bt1));
         
-        Button bt = new Button("Construction");
-        bt.setOnAction(new btConsControler(tm,bt));
-        sp1.getChildren().add(bt);
+        Button bt2 = new Button("New game");
+        bt2.setOnAction(new btNewController(tm,bt2));
+        
+        h1.getChildren().addAll(bt1,bt2);
+        v1.getChildren().add(h1);
+        sp1.getChildren().add(v1);
         sp2.getChildren().add(grille);
         root.getItems().addAll(sp1,sp2);
         Scene scene = new Scene(root, 1200, 500);
@@ -90,6 +100,18 @@ public class ProjetJavaTrain extends Application implements Observateur{
     public void update(){
         grille.getChildren().clear();
         initMap();
+        if(timeline == null){
+            timeline = new Timeline(new KeyFrame(
+                    Duration.millis(1000),
+                    ae -> {
+                        for(Ville v:tm.getListeVille()){
+                            v.produire();
+                        }
+                        tm.bougerTrain();
+                    }));
+            timeline.setCycleCount(Animation.INDEFINITE);
+            timeline.play();
+        }
     }
     
 
@@ -97,14 +119,5 @@ public class ProjetJavaTrain extends Application implements Observateur{
     public void avertir() {
         update();
     }
-    
-    private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
-    for (Node node : gridPane.getChildren()) {
-        if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
-            return node;
-        }
-    }
-    return null;
-}
     
 }

@@ -18,17 +18,31 @@ public class Ville extends Decors{
     private int vitesse;
     private int lvl;
 
-    public Ville(int x, int y, Image img, boolean b) {
+    public Ville(int x, int y, Image img, boolean b, Bien bien) {
         super(x, y, img, b);
         stock = new ArrayList<>();
         vitesse = 1;
         lvl = 1;
+        this.typeRessource = bien;
+        stock.add(typeRessource);
     }
     
     public void produire(){
         if(typeRessource !=null){
-            stock.add(typeRessource);
+            typeRessource.produire();
         }
+    }
+    
+    public ArrayList<Bien> getStock(){
+        return stock;
+    }
+    
+    public String afficherStock(){
+        String str = "Stock ville en "+getX()+" "+getY()+" - ";
+        for(Bien b:stock){
+            str += b.toString()+" - ";
+        }
+        return str;
     }
     
     public void upgradeVille(Joueur j){
