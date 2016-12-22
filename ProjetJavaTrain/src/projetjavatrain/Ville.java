@@ -17,19 +17,22 @@ public class Ville extends Decors{
     private ArrayList<Bien> stock;
     private int vitesse;
     private int lvl;
+    private Joueur j;
 
-    public Ville(int x, int y, Image img, boolean b, Bien bien) {
+    public Ville(int x, int y, Image img, boolean b, Bien bien, Joueur j) {
         super(x, y, img, b);
         stock = new ArrayList<>();
         vitesse = 1;
         lvl = 1;
         this.typeRessource = bien;
         stock.add(typeRessource);
+        this.j=j;
     }
     
     public void produire(){
         if(typeRessource !=null){
             typeRessource.produire();
+            j.upScore(typeRessource);
         }
     }
     

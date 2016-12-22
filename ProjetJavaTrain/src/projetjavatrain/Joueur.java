@@ -22,6 +22,12 @@ public class Joueur {
         historiqueProduction = new ArrayList<>();
     }
     
+    public void reset(){
+        score = 0;
+        setArgent(0);
+        historiqueProduction.clear();
+    }
+    
     public void deduireArgent(int i){
         setArgent(getArgent() - i);
     }

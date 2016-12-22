@@ -29,6 +29,7 @@ import javafx.util.Duration;
  *
  * @author Nundra
  */
+
 public class ProjetJavaTrain extends Application implements Observateur{
     static TrainModel tm = new TrainModel();
     SplitPane root = new SplitPane();
@@ -39,6 +40,8 @@ public class ProjetJavaTrain extends Application implements Observateur{
     HBox h1 = new HBox(2);
     int numCols = 15 ;
     int numRows = 10 ;
+    
+    ArrayList<Timeline> listeTime = new ArrayList<>();
     
     static Timeline timeline = null;
         
@@ -102,15 +105,15 @@ public class ProjetJavaTrain extends Application implements Observateur{
         initMap();
         if(timeline == null){
             timeline = new Timeline(new KeyFrame(
-                    Duration.millis(1000),
+                    Duration.millis(5000),
                     ae -> {
                         for(Ville v:tm.getListeVille()){
                             v.produire();
                         }
-                        tm.bougerTrain();
                     }));
             timeline.setCycleCount(Animation.INDEFINITE);
             timeline.play();
+            listeTime.add(timeline);
         }
     }
     
@@ -118,6 +121,66 @@ public class ProjetJavaTrain extends Application implements Observateur{
     @Override
     public void avertir() {
         update();
+    }
+    
+    @Override
+    public void AvertirNewTimeLine(Train t){
+        int vitesse;
+        if(t.getVitesse()==3){
+            vitesse = 1650;
+        }else{
+            vitesse = 5000 / t.getVitesse();
+        }
+            Timeline time = new Timeline(new KeyFrame(
+                    Duration.millis(vitesse),
+                    ae -> {
+                        tm.bougerTrain(t);
+                    }));
+            time.setCycleCount(Animation.INDEFINITE);
+            time.play();
+            t.newTimeline(time);
+            listeTime.add(time);
+    }
+    
+    @Override
+    public void avertirUpdateTimeLine(Train t){
+        Timeline time = listeTime.get(listeTime.indexOf(t.getTimeline()));
+        int vitesse;
+        if(t.getVitesse()==3){
+            vitesse = 1650;
+        }else{
+            vitesse = 5000 / t.getVitesse();
+        }
+            time = new Timeline(new KeyFrame(
+                    Duration.millis(vitesse),
+                    ae -> {
+                        tm.bougerTrain(t);
+                    }));
+            time.setCycleCount(Animation.INDEFINITE);
+            time.play();
+            t.newTimeline(time);
+            listeTime.add(time);
+    }
+    
+    @Override
+    public void avertirNewGame(){
+        for(Timeline t:listeTime){
+            t.stop();
+            t=null;
+        }
+        listeTime.clear();
+    }
+    @Override
+    public void avertirPause(){
+        for(Timeline t:listeTime){
+            t.stop();
+        }
+    }
+    @Override
+    public void avertirFinPause(){
+        for(Timeline t:listeTime){
+            t.play();
+        }
     }
     
 }

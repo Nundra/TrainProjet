@@ -14,6 +14,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
+import static projetjavatrain.ProjetJavaTrain.timeline;
 import static projetjavatrain.ProjetJavaTrain.tm;
 
 /**
@@ -28,6 +29,8 @@ public class TrainModel {
     private ArrayList<Train> listeTrain = new ArrayList<>();
     ArrayList<Observateur> obs;
     
+    private Joueur joueur;
+    
     Image montagne = new Image("img/montagne.png");
     Image ville = new Image("img/ville.png");
     Image plaine = new Image("img/plaine.png");
@@ -39,6 +42,10 @@ public class TrainModel {
     Image railGH = new Image("img/railGH.png");
     Image valid = new Image("img/valid.png");
     Image train = new Image("img/train.png");
+    Image trainHG = new Image("img/trainHG.png");
+    Image trainHD = new Image("img/trainHD.png");
+    Image trainVH = new Image("img/trainVH.png");
+    Image trainVB = new Image("img/trainVB.png");
     
     private Bien lait = new Bien("lait",1,10);
     private Bien plastique = new Bien("plastique",1,10);
@@ -47,8 +54,11 @@ public class TrainModel {
     private ArrayList<Bien> listeBien = new ArrayList<>();
     ArrayList<Rail> dTemp = new ArrayList<>();
     
+    ArrayList<Rail> testRailTemp = new ArrayList<>();
+    ArrayList<Rail> testRailFinal = new ArrayList<>();
+    
     public TrainModel(){
-        for(int i = 0; i < 8; i++){
+        for(int i = 0; i < 100; i++){
             dTemp.add(null);
         }
     
@@ -59,10 +69,12 @@ public class TrainModel {
         listeBien.add(plastique);
         listeBien.add(null);
         pot.addComposant(plastique, 10);
+        this.joueur = new Joueur();
     }
     
     public void newGame(){
         this.mode="game";
+        joueur.reset();
         this.board = new int [15][10];
         int compteur = 0;
         
@@ -87,7 +99,7 @@ public class TrainModel {
                 //placement ville
                     (i==10 && j==5) || (i==6 && j==7 ) || (i==4 && j==3)
                         ){
-                            m = new Ville(i,j,ville,false,listeBien.get(compteur));
+                            m = new Ville(i,j,ville,false,listeBien.get(compteur),this.joueur);
                             compteur++;
                             listeDecors.add(m);
                             listeVille.add((Ville) m);
@@ -104,6 +116,9 @@ public class TrainModel {
         btConsControler.reset();
         Rail.resetId();
         avertirAllObservateurs();
+        for(Observateur o:obs){
+            o.avertirNewGame();
+        }
     }
     
     public void register(Observateur o){
@@ -119,19 +134,23 @@ public class TrainModel {
             o.avertir();
         }
     }
-    
-    public void startConstruction(){
-        for(int i = 0; i<15; i++){
-            for(int j = 0; j<10; j++){
-                if(getCase(i,j)==2){
-                    setCaseAutour(i,j,true);
-                }
-            }
+    public void avertirPauseAllObservateurs(){
+        for(Observateur o:obs){
+            o.avertirPause();
+        }
+    }
+    public void avertirFinPauseAllObservateurs(){
+        for(Observateur o:obs){
+            o.avertirFinPause();
         }
     }
     
-    ArrayList<Rail> testRailTemp = new ArrayList<>();
-    ArrayList<Rail> testRailFinal = new ArrayList<>();
+    public void startConstruction(){
+        for(Ville v:listeVille){
+            setCaseAutour(v.getX(),v.getY(),true);
+        }
+        avertirPauseAllObservateurs();
+    }
     
     public void finConstruction(){
         for(int i = 0; i<15; i++){
@@ -141,20 +160,16 @@ public class TrainModel {
                 }
                 if(getCase(i,j)==2){
                         if(board[i][j-1]==3){
-                            Rail r = (Rail) getDecors(i,j-1);
-                            testLigne(i,j-1,false);
+                                testLigne(i,j-1);
                         }
                         if(board[i][j+1]==3){
-                            Rail r = (Rail) getDecors(i,j+1);
-                            testLigne(i,j+1,false);
+                                testLigne(i,j+1);
                         }
                         if(board[i-1][j]==3){
-                            Rail r = (Rail) getDecors(i-1,j);
-                            testLigne(i-1,j,false);
+                                testLigne(i-1,j);
                         }
                         if(board[i+1][j]==3){
-                            Rail r = (Rail) getDecors(i+1,j);
-                            testLigne(i+1,j,false);
+                                testLigne(i+1,j);
                         }
                 }
             }
@@ -170,10 +185,11 @@ public class TrainModel {
                 }
             }
         }
+        avertirFinPauseAllObservateurs();
     }
     
-    public void testLigne(int _i, int _j, boolean bool){
-        boolean close = bool;
+    public void testLigne(int _i, int _j){
+        boolean close = false;
         int i = _i;
         int j = _j;
         Rail r = (Rail) getDecors(i,j);
@@ -203,6 +219,9 @@ public class TrainModel {
             }
             testRailTemp.clear();
             Train t = new Train(i,j,train,false,r.getId());
+                for(Observateur o:obs){
+                    o.AvertirNewTimeLine(t);
+                }
             listeTrain.add(t);
             poserTrain((Train) t,i,j);
         }else{
@@ -214,8 +233,6 @@ public class TrainModel {
         
     }
     
-    
-    
     public void poserTrain(Train t, int i, int j){
         dTemp.set(t.getIdLigne(),(Rail) getDecors(i,j));
         listeDecors.remove(dTemp.get(t.getIdLigne()));
@@ -224,75 +241,80 @@ public class TrainModel {
         avertirAllObservateurs();
     }
     
-    public void bougerTrain(){
+    public void bougerTrain(Train t){
+        int i = t.getX();
+        int j = t.getY();
         int x = 0;
         int y = 0;
-        for(int i = 0; i<15; i++){
-            for(int j = 0; j<10; j++){
-                if(getCase(i,j)==10){
-                    Train t = (Train) getDecors(i,j);
-                    if(t.estDeplace() == false){
-                        System.out.println("new sens ="+t.getNewSens());
-                        if( ( getCase(i+1,j) == t.getSens() ) && ( ((Rail) getDecors(i+1,j)).getId() == t.getIdLigne() ) ){
-                            x = i+1;y=j;
-                            listeDecors.remove(getDecors(i,j));
-                            listeDecors.add(dTemp.get(t.getIdLigne()));
-                            board[i][j] = t.getNewSens();
-                            dTemp.set(t.getIdLigne(),(Rail) getDecors(x,y));
-                            listeDecors.remove(dTemp.get(t.getIdLigne()));
-                            t.setX(x);
-                            t.setY(y);
-                            board[x][y]=10;
-                            listeDecors.add(t);
-                            avertirAllObservateurs();
-                        }else if( ( getCase(i-1,j) == t.getSens() ) && ( ((Rail) getDecors(i-1,j)).getId() == t.getIdLigne() ) ){
-                            x = i-1;y=j;
-                            listeDecors.remove(getDecors(i,j));
-                            listeDecors.add(dTemp.get(t.getIdLigne()));
-                            board[i][j] = t.getNewSens();
-                            dTemp.set(t.getIdLigne(),(Rail) getDecors(x,y));
-                            listeDecors.remove(dTemp.get(t.getIdLigne()));
-                            t.setX(x);
-                            t.setY(y);
-                            board[x][y]=10;
-                            listeDecors.add(t);
-                            avertirAllObservateurs();
-                        }else if( ( getCase(i,j+1) == t.getSens() ) && ( ((Rail) getDecors(i,j+1)).getId() == t.getIdLigne() ) ){
-                            x = i;y=j+1;
-                            listeDecors.remove(getDecors(i,j));
-                            listeDecors.add(dTemp.get(t.getIdLigne()));
-                            board[i][j] = t.getNewSens();
-                            dTemp.set(t.getIdLigne(),(Rail) getDecors(x,y));
-                            listeDecors.remove(dTemp.get(t.getIdLigne()));
-                            t.setX(x);
-                            t.setY(y);
-                            board[x][y]=10;
-                            listeDecors.add(t);
-                            avertirAllObservateurs();
-                        }else if( ( getCase(i,j-1) == t.getSens() ) && ( ((Rail) getDecors(i,j-1)).getId() == t.getIdLigne() ) ){
-                            x = i;y=j-1;
-                            listeDecors.remove(getDecors(i,j));
-                            listeDecors.add(dTemp.get(t.getIdLigne()));
-                            board[i][j] = t.getNewSens();
-                            dTemp.set(t.getIdLigne(),(Rail) getDecors(x,y));
-                            listeDecors.remove(dTemp.get(t.getIdLigne()));
-                            t.setX(x);
-                            t.setY(y);
-                            board[x][y]=10;
-                            listeDecors.add(t);
-                            avertirAllObservateurs();
-                        }else if(getCase(i+1,j)==2 || getCase(i-1,j)==2 || getCase(i,j+1)==2 || getCase(i,j-1)==2){
-                            t.changerSens();
-                            System.out.println("tombé sur une ville");
-                        }
-                        t.setDeplace(true);
-                    }
-                }
+        System.out.println("new sens ="+t.getNewSens());
+        if( ( getCase(i+1,j) == t.getSens() ) ){
+            if( ((Rail) getDecors(i+1,j)).getId() == t.getIdLigne() ){
+                x = i+1;
+                y=j;
+                listeDecors.remove(getDecors(i,j));
+                listeDecors.add(dTemp.get(t.getIdLigne()));
+                board[i][j] = t.getNewSens();
+                dTemp.set(t.getIdLigne(),(Rail) getDecors(x,y));
+                listeDecors.remove(dTemp.get(t.getIdLigne()));
+                t.setX(x);
+                t.setY(y);
+                board[x][y]=10;
+                listeDecors.add(t);
             }
+        }else if( ( getCase(i-1,j) == t.getSens() ) ){
+            if( ((Rail) getDecors(i-1,j)).getId() == t.getIdLigne() ){
+                x = i-1;y=j;
+                listeDecors.remove(getDecors(i,j));
+                listeDecors.add(dTemp.get(t.getIdLigne()));
+                board[i][j] = t.getNewSens();
+                dTemp.set(t.getIdLigne(),(Rail) getDecors(x,y));
+                listeDecors.remove(dTemp.get(t.getIdLigne()));
+                t.setX(x);
+                t.setY(y);
+                board[x][y]=10;
+                listeDecors.add(t);
+            }
+        }else if( ( getCase(i,j+1) == t.getSens() ) ){
+            if( ((Rail) getDecors(i,j+1)).getId() == t.getIdLigne() ){
+                x = i;y=j+1;
+                listeDecors.remove(getDecors(i,j));
+                listeDecors.add(dTemp.get(t.getIdLigne()));
+                board[i][j] = t.getNewSens();
+                dTemp.set(t.getIdLigne(),(Rail) getDecors(x,y));
+                listeDecors.remove(dTemp.get(t.getIdLigne()));
+                t.setX(x);
+                t.setY(y);
+                board[x][y]=10;
+                listeDecors.add(t);
+            }
+        }else if( ( getCase(i,j-1) == t.getSens() ) ){
+            if( ((Rail) getDecors(i,j-1)).getId() == t.getIdLigne() ){
+                x = i;y=j-1;
+                listeDecors.remove(getDecors(i,j));
+                listeDecors.add(dTemp.get(t.getIdLigne()));
+                board[i][j] = t.getNewSens();
+                dTemp.set(t.getIdLigne(),(Rail) getDecors(x,y));
+                listeDecors.remove(dTemp.get(t.getIdLigne()));
+                t.setX(x);
+                t.setY(y);
+                board[x][y]=10;
+                listeDecors.add(t);
+            }
+        }else if(getCase(i+1,j)==2 || getCase(i-1,j)==2 || getCase(i,j+1)==2 || getCase(i,j-1)==2){
+            t.changerSens();
+            System.out.println("tombé sur une ville");
         }
-        for(Train t:listeTrain){
-            t.setDeplace(false);
-        }
+        avertirAllObservateurs();
+        
+    }
+    
+    public Image orienterTrain(int i, int j){
+        Train t = (Train) getDecors(i,j);
+        if(getCase(i+1,j) == t.getSens())return trainHD;
+        if(getCase(i-1,j) == t.getSens())return trainHG;
+        if(getCase(i,j+1) == t.getSens())return trainVB;
+        if(getCase(i,j-1) == t.getSens())return trainVH;
+        return null;
     }
     
     public void poserRail(int i, int j){
@@ -302,63 +324,73 @@ public class TrainModel {
         board[i][j] = 3;
         setCaseAutour(i,j,true);
             if(board[i-1][j]==3){
-                d.setupChemin(i-1, j, i-1, j);
-                setCaseAutour(i-1,j,false);
                 Rail d2 = (Rail) getDecors(i-1,j);
-                d2.setEditable(false);
-                    if(board[i-1][j-1] == 3 || board[i-1][j-1] == 2){
-                        d2.setImg(railDH);
-                        d2.setupChemin(i-1,j-1,i,j);
-                    }
-                    if(board[i-1][j+1] == 3 || board[i-1][j+1] == 2){
-                        d2.setImg(railBD);
-                        d2.setupChemin(i-1,j+1,i,j);
-                    }
-                    if(board[i-2][j] == 3 || board[i-2][j] == 2){
-                        d2.setImg(railH);
-                        d2.setupChemin(i-2,j,i,j);
-                    }
+                if(!d2.estTeste()){
+                    d.setupChemin(i-1, j, i-1, j);
+                    setCaseAutour(i-1,j,false);
+                    d2.setEditable(false);
+                        if(board[i-1][j-1] == 3 || board[i-1][j-1] == 2){
+                            d2.setImg(railDH);
+                            d2.setupChemin(i-1,j-1,i,j);
+                        }
+                        if(board[i-1][j+1] == 3 || board[i-1][j+1] == 2){
+                            d2.setImg(railBD);
+                            d2.setupChemin(i-1,j+1,i,j);
+                        }
+                        if(board[i-2][j] == 3 || board[i-2][j] == 2){
+                            d2.setImg(railH);
+                            d2.setupChemin(i-2,j,i,j);
+                        }
+                    d2.setTeste(true);
+                }
             }
             if(board[i+1][j]==3){
-                d.setupChemin(i+1, j, i+1, j);
-                setCaseAutour(i+1,j,false);
                 Rail d2 = (Rail) getDecors(i+1,j);
-                d2.setEditable(false);
-                    if(board[i+1][j-1] == 3 || board[i+1][j-1] == 2){
-                        d2.setImg(railGH);
-                        d2.setupChemin(i+1,j-1,i,j);
-                    }
-                    if(board[i+1][j+1] == 3 || board[i+1][j+1] == 2){
-                        d2.setImg(railBG);
-                        d2.setupChemin(i+1,j+1,i,j);
-                    }
-                    if(board[i+2][j] == 3 || board[i+2][j] == 2){
-                        d2.setImg(railH);
-                        d2.setupChemin(i+2,j,i,j);
-                    }
+                if(!d2.estTeste()){
+                    d.setupChemin(i+1, j, i+1, j);
+                    setCaseAutour(i+1,j,false);
+                    d2.setEditable(false);
+                        if(board[i+1][j-1] == 3 || board[i+1][j-1] == 2){
+                            d2.setImg(railGH);
+                            d2.setupChemin(i+1,j-1,i,j);
+                        }
+                        if(board[i+1][j+1] == 3 || board[i+1][j+1] == 2){
+                            d2.setImg(railBG);
+                            d2.setupChemin(i+1,j+1,i,j);
+                        }
+                        if(board[i+2][j] == 3 || board[i+2][j] == 2){
+                            d2.setImg(railH);
+                            d2.setupChemin(i+2,j,i,j);
+                        }
+                    d2.setTeste(true);
+                }
             }
             if(board[i][j-1]==3){
-                d.setupChemin(i, j-1, i, j-1);
-                setCaseAutour(i,j-1,false);
                 Rail d2 = (Rail) getDecors(i,j-1);
-                d2.setEditable(false);
-                    if(board[i-1][j-1] == 3 || board[i-1][j-1] == 2){
-                        d2.setImg(railBG);
-                        d2.setupChemin(i-1,j-1,i,j);
-                    }
-                    if(board[i+1][j-1] == 3 || board[i+1][j-1] == 2){
-                        d2.setImg(railBD);
-                        d2.setupChemin(i+1,j-1,i,j);
-                    }
-                    if(board[i][j-2] == 3 || board[i][j-2] == 2){
-                        d2.setImg(railV);
-                        d2.setupChemin(i,j-2,i,j);
-                    }
+                if(!d2.estTeste()){
+                    d.setupChemin(i, j-1, i, j-1);
+                    setCaseAutour(i,j-1,false);
+                    d2.setEditable(false);
+                        if(board[i-1][j-1] == 3 || board[i-1][j-1] == 2){
+                            d2.setImg(railBG);
+                            d2.setupChemin(i-1,j-1,i,j);
+                        }
+                        if(board[i+1][j-1] == 3 || board[i+1][j-1] == 2){
+                            d2.setImg(railBD);
+                            d2.setupChemin(i+1,j-1,i,j);
+                        }
+                        if(board[i][j-2] == 3 || board[i][j-2] == 2){
+                            d2.setImg(railV);
+                            d2.setupChemin(i,j-2,i,j);
+                        }
+                    d2.setTeste(true);
+                }
             }
             if(board[i][j+1]==3){
+                Rail d2 = (Rail) getDecors(i,j+1);
+                if(!d2.estTeste()){
                 d.setupChemin(i, j+1, i, j+1);
                 setCaseAutour(i,j+1,false);
-                Rail d2 = (Rail) getDecors(i,j+1);
                 d2.setEditable(false);
                     if(board[i-1][j+1] == 3 || board[i-1][j+1] == 2){
                         d2.setImg(railGH);
@@ -372,6 +404,8 @@ public class TrainModel {
                         d2.setImg(railV);
                         d2.setupChemin(i,j+2,i,j);
                     }
+                    d2.setTeste(true);
+                }
             }
         avertirAllObservateurs();
     }
@@ -448,7 +482,7 @@ public class TrainModel {
     
     public Image orienterRail(int i, int j){
         if(board[i-1][j] == 2){
-            if(board[i][j-1]==3){
+            if(board[i][j-1]== 3){
                 return railGH;
             }else if(board[i][j+1]==3){
                 return railBG;
@@ -510,8 +544,5 @@ public class TrainModel {
      */
     public ArrayList<Ville> getListeVille() {
         return listeVille;
-    }
-    
-    
-    
+    } 
 }

@@ -13,4 +13,9 @@ import javafx.scene.image.ImageView;
  */
 public interface Observateur {
     public abstract void avertir();
+    public abstract void AvertirNewTimeLine(Train t);
+    public abstract void avertirUpdateTimeLine(Train t);
+    public abstract void avertirNewGame();
+    public abstract void avertirPause();
+    public abstract void avertirFinPause();
 }

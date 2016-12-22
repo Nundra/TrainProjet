@@ -5,7 +5,11 @@
  */
 package projetjavatrain;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.image.Image;
+import javafx.util.Duration;
 
 /**
  *
@@ -19,13 +23,14 @@ public class Train extends Decors{
     private int sens;
     private int idLigne;
     private boolean deplace;
+    private Timeline timeline;
     
     public Train(int x, int y, Image img, boolean b, int id) {
         super(x, y, img, b);
         this.capacite = 5;
-        this.vitesse = 1;
+        this.vitesse = 5;
         this.niveau = 1;
-        this.coutUpgrade = 100;
+        this.coutUpgrade = 10;
         this.sens = 5;
         this.idLigne = id;
         deplace = false;
@@ -37,7 +42,7 @@ public class Train extends Decors{
             this.niveau++;
             this.capacite = capacite*niveau;
             this.vitesse++;
-            this.coutUpgrade = 100*niveau*niveau;
+            this.coutUpgrade = 10*niveau*niveau;
             return "Train upgrade";
         }
         return "fond insuffisant";
@@ -72,5 +77,17 @@ public class Train extends Decors{
     }
     public void setDeplace(boolean b){
         deplace = b;
+    }
+    
+    public void newTimeline(Timeline time){
+        this.timeline=time;
+    }
+    
+    public Timeline getTimeline(){
+        return timeline;
+    }
+    
+    public int getVitesse(){
+        return vitesse;
     }
 }

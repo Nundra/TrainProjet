@@ -15,10 +15,13 @@ public class Rail extends Decors{
     private int chemin[];
     private static int idTotal;
     private int id;
+    private boolean railTeste; // servira a tester une ligne de rail
+    
     public Rail(int x, int y, Image img, boolean b) {
         super(x, y, img, b);
-        id = 0;
-        chemin = new int[4];
+        this.id = 0;
+        this.chemin = new int[4];
+        this.railTeste = false;
     }
 
     public void setupChemin(int i,int j,int x,int y){
@@ -59,5 +62,13 @@ public class Rail extends Decors{
      */
     public int[] getChemin() {
         return chemin;
+    }
+    
+    public boolean estTeste(){
+        return this.railTeste;
+    }
+    
+    public void setTeste(boolean bool){
+        this.railTeste = bool;
     }
 }
