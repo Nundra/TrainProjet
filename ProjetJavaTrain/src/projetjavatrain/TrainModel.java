@@ -115,7 +115,6 @@ public class TrainModel {
         }
         btConsControler.reset();
         Rail.resetId();
-        avertirAllObservateurs();
         for(Observateur o:obs){
             o.avertirNewGame();
         }
@@ -144,6 +143,12 @@ public class TrainModel {
             o.avertirFinPause();
         }
     }
+    public void avertirTxtInterface(Decors d){
+        for(Observateur o:obs){
+            o.avertirTxtInterface(d);
+        }
+    }
+    
     
     public void startConstruction(){
         for(Ville v:listeVille){

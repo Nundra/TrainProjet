@@ -85,4 +85,8 @@ public class Bien {
     void reset(){
         this.quantite = 1;
     }
+    
+    public String getNom(){
+        return this.nom;
+    }
 }

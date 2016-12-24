@@ -18,4 +18,5 @@ public interface Observateur {
     public abstract void avertirNewGame();
     public abstract void avertirPause();
     public abstract void avertirFinPause();
+    public abstract void avertirTxtInterface(Decors d);
 }

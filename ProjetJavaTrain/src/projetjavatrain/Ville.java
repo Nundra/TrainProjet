@@ -31,7 +31,9 @@ public class Ville extends Decors{
     
     public void produire(){
         if(typeRessource !=null){
-            typeRessource.produire();
+            for(Bien b:stock){
+                b.produire();
+            }
             j.upScore(typeRessource);
         }
     }
@@ -58,5 +60,9 @@ public class Ville extends Decors{
     
     public int getCoutDeUp(){
         return 100*lvl*lvl;
+    }
+
+    public Bien getTypeRessource() {
+        return typeRessource;
     }
 }

@@ -36,14 +36,25 @@ public class ProjetJavaTrain extends Application implements Observateur{
     StackPane sp1 = new StackPane();
     StackPane sp2 = new StackPane();
     GridPane grille = new GridPane();
-    VBox v1 = new VBox(2);
+    VBox v1 = new VBox(5);
     HBox h1 = new HBox(2);
+    HBox h2 = new HBox(2);
+    HBox h3 = new HBox(2);
     int numCols = 15 ;
     int numRows = 10 ;
     
     ArrayList<Timeline> listeTime = new ArrayList<>();
     
+    static Decors currentDecors;
+    
     static Timeline timeline = null;
+        
+        Label l = new Label("Train Simulator 2017");
+        Button bt1 = new Button("Construction");
+        Button bt2 = new Button("New game");
+        static Label currentElem = new Label ("Elem");
+        static Label currentElem1 = new Label ("Elem1");
+        static Label currentValue1 = new Label ("Value1");
         
     
     public void initMap(){
@@ -62,6 +73,8 @@ public class ProjetJavaTrain extends Application implements Observateur{
     
     @Override
     public void start(Stage primaryStage) {
+        bt1.setOnAction(new btConsControler(tm,bt1));
+        bt2.setOnAction(new btNewController(tm,bt2));
         for (int i = 0; i < numCols; i++) {
             ColumnConstraints colConst = new ColumnConstraints(50);
             grille.getColumnConstraints().add(colConst);
@@ -71,16 +84,10 @@ public class ProjetJavaTrain extends Application implements Observateur{
             grille.getRowConstraints().add(rowConst);         
         }
         
-        Label l = new Label("Train Simulator 2017");
-        v1.getChildren().add(l);
-        Button bt1 = new Button("Construction");
-        bt1.setOnAction(new btConsControler(tm,bt1));
-        
-        Button bt2 = new Button("New game");
-        bt2.setOnAction(new btNewController(tm,bt2));
-        
         h1.getChildren().addAll(bt1,bt2);
-        v1.getChildren().add(h1);
+        h2.getChildren().addAll(currentElem1,currentValue1);
+        
+        v1.getChildren().addAll(l,h1,currentElem,h2,h3);
         sp1.getChildren().add(v1);
         sp2.getChildren().add(grille);
         root.getItems().addAll(sp1,sp2);
@@ -97,6 +104,13 @@ public class ProjetJavaTrain extends Application implements Observateur{
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        Timeline updateUI = new Timeline(new KeyFrame(
+                    Duration.millis(1000),
+                    ae -> {
+                        updateTxtUi(currentDecors);
+                    }));
+            updateUI.setCycleCount(Animation.INDEFINITE);
+            updateUI.play();
         launch(args);
     }
     
@@ -105,10 +119,11 @@ public class ProjetJavaTrain extends Application implements Observateur{
         initMap();
         if(timeline == null){
             timeline = new Timeline(new KeyFrame(
-                    Duration.millis(5000),
+                    Duration.millis(1000),
                     ae -> {
                         for(Ville v:tm.getListeVille()){
                             v.produire();
+                            System.out.println("production");
                         }
                     }));
             timeline.setCycleCount(Animation.INDEFINITE);
@@ -169,6 +184,7 @@ public class ProjetJavaTrain extends Application implements Observateur{
             t=null;
         }
         listeTime.clear();
+        update();
     }
     @Override
     public void avertirPause(){
@@ -180,6 +196,25 @@ public class ProjetJavaTrain extends Application implements Observateur{
     public void avertirFinPause(){
         for(Timeline t:listeTime){
             t.play();
+        }
+    }
+    
+    @Override
+    public void avertirTxtInterface(Decors d){
+        currentDecors = d;
+    }
+ 
+    public static void updateTxtUi(Decors d){
+        if(d instanceof Ville){
+            Ville v = (Ville) d;
+            currentElem.setText("Ville");
+            currentElem1.setText("Ressource : "+v.getStock().get(0).getNom());
+            currentValue1.setText("= "+v.getStock().get(0).getQuantite());
+        }
+        if(d instanceof Train){
+            
+        }else{
+            
         }
     }
     

@@ -39,6 +39,8 @@ public class CaseControler implements EventHandler {
             }else if(model.getDecors(i, j).isEditable() && model.getCase(i, j)==3){
                 model.retirerRail(i, j);
             }
+        }else{
+            model.avertirTxtInterface(model.getDecors(i,j));
         }
         if(model.getCase(i, j)==5){
             Rail r = (Rail) model.getDecors(i, j);
