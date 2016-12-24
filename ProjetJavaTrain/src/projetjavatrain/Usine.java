@@ -43,7 +43,7 @@ public class Usine extends Ville{
     }
     
     @Override
-    public void décharger(Train t) {
+    public void decharger(Train t) {
         for (Bien b:t.getCharge()) {
             if (b == typeRessource) {
                 

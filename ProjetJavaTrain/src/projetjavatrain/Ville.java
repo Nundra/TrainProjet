@@ -63,4 +63,12 @@ public class Ville extends Decors{
     public Bien getTypeRessource() {
         return typeRessource;
     }
+    
+    public void charger() {
+        
+    }
+    
+    public void decharger() {
+        
+    }
 }
