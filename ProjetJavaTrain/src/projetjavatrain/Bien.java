@@ -17,10 +17,12 @@ public class Bien {
     private int valeur;
     private ArrayList<Bien> composant;
     private ArrayList<Integer> composantQt;
+    private ArrayList<Boolean> composantValid;
     
     public Bien(String _n, int _q, int _v){
         composant = new ArrayList<>();
         composantQt = new ArrayList<>();
+        composantValid = new ArrayList<>();
         nom = _n;
         quantite = _q;
         valeur = _v;
@@ -34,20 +36,25 @@ public class Bien {
     public void addComposant(Bien b,int qt){
         composant.add(b);
         composantQt.add(qt);
+        composantValid.add(false);
     }
     
-    public void estFaisable(Ville v){
-        //bool b = false;
+    public boolean estFaisable(Ville v){
+        boolean bool = true;
         for(Bien b:composant){
             for(Bien b2:v.getStock()){
                 if(b == b2){
                     if(b2.quantite == composantQt.get(composant.indexOf(b))){
-                        System.out.println("COMPOSANT OK");
+                        composantValid.set((composant.indexOf(b)), true);
                     }
                 }
             }
         }
-        //return false;
+        
+        for(boolean bool2:composantValid){
+            if(bool2 == false)bool = bool2;
+        }
+        return bool;
     }
     
     /**
@@ -88,5 +95,10 @@ public class Bien {
     
     public String getNom(){
         return this.nom;
+    }
+    
+    public ArrayList<Bien> listeComposant(){
+        if(!composant.isEmpty())return composant;
+        return null;
     }
 }
