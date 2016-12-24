@@ -49,13 +49,13 @@ public class CaseControler implements EventHandler {
     }
 }
 /*new EventHandler<MouseEvent>()
-                                {
-                                    @Override
-                                    public void handle(MouseEvent e)
-                                    {
-                                        Node source = (Node)e.getSource() ;
-                                        Integer colIndex = GridPane.getColumnIndex(source);
-                                        Integer rowIndex = GridPane.getRowIndex(source);
-                                        System.out.println("click :"+colIndex+rowIndex);
-                                    }
-                                }*/
+{
+    @Override
+    public void handle(MouseEvent e)
+    {
+        Node source = (Node)e.getSource() ;
+        Integer colIndex = GridPane.getColumnIndex(source);
+        Integer rowIndex = GridPane.getRowIndex(source);
+        System.out.println("click :"+colIndex+rowIndex);
+    }
+}*/

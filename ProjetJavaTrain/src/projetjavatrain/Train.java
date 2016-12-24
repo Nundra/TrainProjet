@@ -24,6 +24,7 @@ public class Train extends Decors{
     private int idLigne;
     private boolean deplace;
     private Timeline timeline;
+    private Bien[] charge;
     
     public Train(int x, int y, Image img, boolean b, int id) {
         super(x, y, img, b);
@@ -34,6 +35,7 @@ public class Train extends Decors{
         this.sens = 5;
         this.idLigne = id;
         deplace = false;
+        this.charge = new Bien[capacite];
     }
     
     public String upgradeTrain(Joueur j){
@@ -89,5 +91,19 @@ public class Train extends Decors{
     
     public int getVitesse(){
         return vitesse;
+    }
+
+    /**
+     * @return the charge
+     */
+    public Bien[] getCharge() {
+        return charge;
+    }
+
+    /**
+     * @param charge the charge to set
+     */
+    public void setCharge(Bien[] charge) {
+        this.charge = charge;
     }
 }

@@ -49,7 +49,7 @@ public class TrainModel {
     
     private Bien lait = new Bien("lait",1,10);
     private Bien plastique = new Bien("plastique",1,10);
-    private Bien pot = new Bien("pot",10,20);
+    private Bien pot = new Bien("pot",0,20);
     
     private ArrayList<Bien> listeBien = new ArrayList<>();
     ArrayList<Rail> dTemp = new ArrayList<>();
@@ -67,9 +67,12 @@ public class TrainModel {
         this.board = new int [15][10];
         listeBien.add(lait);
         listeBien.add(plastique);
-        listeBien.add(null);
+        listeBien.add(pot);
         pot.addComposant(plastique, 10);
         this.joueur = new Joueur();
+        
+        pot.addComposant(lait, 10);
+        pot.addComposant(plastique, 5);
     }
     
     public void newGame(){

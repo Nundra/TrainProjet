@@ -57,6 +57,16 @@ public class Bien {
         return bool;
     }
     
+    public int getQtNeeded(Bien b){
+        for(Bien b2:composant){
+            if(b2.getNom().equals(b.getNom())){
+                return composantQt.get(composant.indexOf(b2));
+            }
+            break;
+        }
+        return 0;
+    }
+    
     /**
      * @return the valeur
      */
@@ -85,8 +95,8 @@ public class Bien {
         this.quantite = quantite;
     }
 
-    void produire() {
-        this.quantite++;
+    void produire(int i) {
+        this.quantite = quantite + i;
     }
     
     void reset(){

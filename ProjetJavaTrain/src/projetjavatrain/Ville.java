@@ -30,12 +30,10 @@ public class Ville extends Decors{
     }
     
     public void produire(){
-        if(typeRessource !=null){
-            for(Bien b:stock){
-                b.produire();
-            }
-            j.upScore(typeRessource);
+        for(Bien b:stock){
+            b.produire(1);
         }
+        j.upScore(typeRessource);
     }
     
     public ArrayList<Bien> getStock(){
