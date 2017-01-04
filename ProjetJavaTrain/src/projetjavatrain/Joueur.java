@@ -18,13 +18,13 @@ public class Joueur {
     
     public Joueur(){
         score = 0;
-        setArgent(0);
+        this.argent= 100000;
         historiqueProduction = new ArrayList<>();
     }
     
     public void reset(){
         score = 0;
-        setArgent(0);
+        argent = 10000;
         historiqueProduction.clear();
     }
     
@@ -32,13 +32,14 @@ public class Joueur {
         setArgent(getArgent() - i);
     }
     
-    public void upScore(Bien b){
-        score = score + b.getValeur();
-        upArgent(b);
+    public void upScore(Bien b,int i){
+        System.out.println(""+i);
+        score = score + (b.getValeur()*i);
+        upArgent(b,i);
     }
     
-    public void upArgent(Bien b){
-        setArgent(getArgent() + b.getValeur());
+    public void upArgent(Bien b,int i){
+        setArgent(getArgent() + (b.getValeur()*i));
     }
 
     /**
@@ -46,6 +47,9 @@ public class Joueur {
      */
     public int getArgent() {
         return argent;
+    }
+    public int getScore() {
+        return score;
     }
 
     /**

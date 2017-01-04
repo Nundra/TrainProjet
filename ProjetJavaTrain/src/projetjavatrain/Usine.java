@@ -15,8 +15,8 @@ import javafx.scene.image.Image;
 public class Usine extends Ville{
     private ArrayList<Bien> depot;
 
-    public Usine(int x, int y, Image img, boolean b, Bien bien, Joueur j) {
-        super(x, y, img, b, bien, j);
+    public Usine(String nom, int x, int y, Image img, boolean b, Bien bien, Joueur j) {
+        super(nom, x, y, img, b, bien, j);
         depot = new ArrayList<>();
     }
     
@@ -26,11 +26,11 @@ public class Usine extends Ville{
             for (Bien b:depot) {
                 b.retirerQuantite(getTypeRessource().getQtNeeded(b));
             }
-            getTypeRessource().produire(5);
+            getTypeRessource().produire(getVitesse()*5);
             System.out.println("pot produit");
             System.out.println("pot "+getTypeRessource().getQuantite());
+            getJ().upScore(getTypeRessource(),getVitesse());
         }
-        getJ().upScore(getTypeRessource());
     }
     
     @Override
@@ -73,6 +73,20 @@ public class Usine extends Ville{
     
     public ArrayList<Bien> getDepot(){
         return this.depot;
+    }
+    
+    @Override
+    public String toString(){
+       String str = "";
+       str += getNom()+"\nstock : \n";
+       for(Bien b:getStock()){
+           str += b.toString()+"\n";
+       }
+       str += "depot : \n";
+       for(Bien b:depot){
+           str += b.toString()+"\n";
+       }
+       return str;
     }
 
 }

@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -36,7 +37,7 @@ public class ProjetJavaTrain extends Application implements Observateur{
     StackPane sp1 = new StackPane();
     StackPane sp2 = new StackPane();
     GridPane grille = new GridPane();
-    VBox v1 = new VBox(5);
+    VBox v1 = new VBox(6);
     HBox h1 = new HBox(2);
     HBox h2 = new HBox(2);
     HBox h3 = new HBox(2);
@@ -46,16 +47,18 @@ public class ProjetJavaTrain extends Application implements Observateur{
     ArrayList<Timeline> listeTime = new ArrayList<>();
     ArrayList<ImageView> listeImg = new ArrayList<>();
     
-    static Decors currentDecors;
+    static Decors currentDecors = null;
     
     static Timeline timeline = null;
         
         Label l = new Label("Train Simulator 2017");
         Button bt1 = new Button("Construction");
         Button bt2 = new Button("New game");
-        static Label currentElem = new Label ("Elem");
-        static Label currentElem1 = new Label ("Elem1");
-        static Label currentValue1 = new Label ("Value1");
+        static Label currentElem = new Label ("Score : "+tm.getJoueur().getScore());
+        static Label currentElem1 = new Label ("Sélectionner un train ou une ville à améliorer");
+        static Button btUpgrade = new Button ("upgrader");
+        
+        static TextArea allInOne= new TextArea();
         
     
     public void initMap(){
@@ -75,7 +78,7 @@ public class ProjetJavaTrain extends Application implements Observateur{
         
         if(timeline == null){
             timeline = new Timeline(new KeyFrame(
-                    Duration.millis(1000),
+                    Duration.millis(5000),
                     ae -> {
                         for(Ville v:tm.getListeVille()){
                             v.produire();
@@ -89,8 +92,11 @@ public class ProjetJavaTrain extends Application implements Observateur{
     
     @Override
     public void start(Stage primaryStage) {
+        btUpgrade.setDisable(true);
+        allInOne.setEditable(false);
         bt1.setOnAction(new btConsControler(tm,bt1));
         bt2.setOnAction(new btNewController(tm,bt2));
+        btUpgrade.setOnAction(new btUpgradeController(tm));
         for (int i = 0; i < numCols; i++) {
             ColumnConstraints colConst = new ColumnConstraints(50);
             grille.getColumnConstraints().add(colConst);
@@ -101,9 +107,9 @@ public class ProjetJavaTrain extends Application implements Observateur{
         }
         
         h1.getChildren().addAll(bt1,bt2);
-        h2.getChildren().addAll(currentElem1,currentValue1);
+        h2.getChildren().addAll(currentElem1,btUpgrade);
         
-        v1.getChildren().addAll(l,h1,currentElem,h2,h3);
+        v1.getChildren().addAll(l,h1,currentElem,h2,h3,allInOne);
         sp1.getChildren().add(v1);
         sp2.getChildren().add(grille);
         root.getItems().addAll(sp1,sp2);
@@ -183,8 +189,6 @@ public class ProjetJavaTrain extends Application implements Observateur{
                     }));
             time.setCycleCount(Animation.INDEFINITE);
             time.play();
-            t.newTimeline(time);
-            listeTime.add(time);
     }
     
     @Override
@@ -217,20 +221,33 @@ public class ProjetJavaTrain extends Application implements Observateur{
     }
  
     public static void updateTxtUi(Decors d){
+        String str = "";
+        for(Ville v:tm.getListeVille()){
+            str += v.toString();
+        }
+        allInOne.setText(str);
+        
+        currentElem.setText("Score : "+tm.getJoueur().getScore()+" && Argent : "+tm.getJoueur().getArgent());
+        
         if(d instanceof Ville){
             Ville v = (Ville) d;
-            currentElem.setText("Ville");
-            currentElem1.setText("Ressource : "+v.getStock().get(0).getNom());
-            currentValue1.setText("= "+v.getStock().get(0).getQuantite());
+            currentElem1.setText(v.getNom()+" lvl "+v.getLvl());
+            btUpgrade.setText("Upgrader "+v.getCoutDeUp());
+            if(v.isUp(tm.getJoueur())){
+                btUpgrade.setDisable(false);
+            }else{
+                btUpgrade.setDisable(true);
+            }
         }
         if(d instanceof Train){
             Train t = (Train) d;
-            currentElem.setText("Train");
-            Bien[] tab = t.getCharge();
-            currentElem1.setText("Ressource : "+tab[0]+" "
-                    +tab[1]+" "+tab[2]+" "+tab[3]
-                    +" "+tab[4]);
-            currentValue1.setText("");
+            currentElem1.setText("Train lvl : "+t.getLvl());
+            btUpgrade.setText("Upgrader "+t.getCoutDeUp());
+            if(t.isUp(tm.getJoueur())){
+                btUpgrade.setDisable(false);
+            }else{
+                btUpgrade.setDisable(true);
+            }
         }else{
             
         }

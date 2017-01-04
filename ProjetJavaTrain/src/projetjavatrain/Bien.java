@@ -28,11 +28,6 @@ public class Bien {
         valeur = _v;
     }
     
-    @Override
-    public String toString(){
-        return nom+" "+quantite;
-    }
-    
     public void addComposant(Bien b,int qt){
         composant.add(b);
         composantQt.add(qt);
@@ -126,5 +121,11 @@ public class Bien {
     public ArrayList<Bien> listeComposant(){
         if(!composant.isEmpty())return composant;
         return null;
+    }
+    
+    
+    @Override
+    public String toString(){
+        return nom+" qté : "+quantite;
     }
 }

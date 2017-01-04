@@ -29,6 +29,8 @@ public class TrainModel {
     private ArrayList<Train> listeTrain = new ArrayList<>();
     ArrayList<Observateur> obs;
     
+     Decors currentDecors = null;
+    
     private Joueur joueur;
     
     Image montagne = new Image("img/montagne.png");
@@ -74,6 +76,10 @@ public class TrainModel {
         pot.addComposant(plastique, 5);
     }
     
+    public Joueur getJoueur(){
+        return this.joueur;
+    }
+    
     public void newGame(){
         this.mode="game";
         joueur.reset();
@@ -102,9 +108,9 @@ public class TrainModel {
                     (i==10 && j==5) || (i==6 && j==7 ) || (i==4 && j==3)
                         ){
                             if(compteur < 2){
-                                m = new Ville(i,j,ville,false,listeBien.get(compteur),this.joueur);
+                                m = new Ville("ville"+i, i,j,ville,false,listeBien.get(compteur),this.joueur);
                             }else {
-                                m = new Usine(i,j,ville,false,listeBien.get(compteur),this.joueur);
+                                m = new Usine("usine"+i,i,j,ville,false,listeBien.get(compteur),this.joueur);
                             }
                             compteur++;
                             listeDecors.add(m);
@@ -148,8 +154,14 @@ public class TrainModel {
         for(Observateur o:obs){
             o.avertirFinPause();
         }
+    }public void avertirUpdateTimeLine(Train t){
+        t.upgradeTrain(joueur);
+        for(Observateur o:obs){
+            o.avertirUpdateTimeLine(t);
+        }
     }
     public void avertirTxtInterface(Decors d){
+        this.currentDecors = d;
         for(Observateur o:obs){
             o.avertirTxtInterface(d);
         }

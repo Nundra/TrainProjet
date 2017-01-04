@@ -13,14 +13,16 @@ import javafx.scene.image.Image;
  * @author Nundra
  */
 public class Ville extends Decors{
+    private String nom;
     private Bien typeRessource;
     private ArrayList<Bien> stock;
     private int vitesse;
     private int lvl;
     private Joueur j;
 
-    public Ville(int x, int y, Image img, boolean b, Bien bien, Joueur j) {
+    public Ville(String nom, int x, int y, Image img, boolean b, Bien bien, Joueur j) {
         super(x, y, img, b);
+        this.nom = nom;
         stock = new ArrayList<>();
         vitesse = 1;
         lvl = 1;
@@ -29,11 +31,18 @@ public class Ville extends Decors{
         this.j=j;
     }
     
+    public int getLvl(){
+        return this.lvl;
+    }
+    public int getVitesse(){
+        return this.vitesse;
+    }
+    
     public void produire(){
         for(Bien b:stock){
-            b.produire(1);
+            b.produire(vitesse);
         }
-        j.upScore(typeRessource);
+        j.upScore(typeRessource,vitesse);
     }
     
     public ArrayList<Bien> getStock(){
@@ -46,6 +55,14 @@ public class Ville extends Decors{
             str += b.toString()+" - ";
         }
         return str;
+    }
+    
+    public boolean isUp(Joueur j){
+        if(j.getArgent() >= getCoutDeUp()){
+            return true;
+        }else{
+            return false;
+        }
     }
     
     public void upgradeVille(Joueur j){
@@ -106,5 +123,19 @@ public class Ville extends Decors{
     
     public Joueur getJ(){
         return this.j;
+    }
+    
+    public String getNom(){
+        return this.nom;
+    }
+    
+    @Override
+    public String toString(){
+       String str = "";
+       str += this.nom+"\nstock : \n";
+       for(Bien b:stock){
+           str += b.toString()+"\n";
+       }
+       return str;
     }
 }

@@ -18,7 +18,7 @@ import javafx.util.Duration;
 public class Train extends Decors{
     private int capacite;
     private int vitesse;
-    private int niveau;
+    private int lvl;
     private int coutUpgrade;
     private int sens;
     private int idLigne;
@@ -29,8 +29,8 @@ public class Train extends Decors{
     public Train(int x, int y, Image img, boolean b, int id) {
         super(x, y, img, b);
         this.capacite = 5;
-        this.vitesse = 5;
-        this.niveau = 1;
+        this.vitesse = 1;
+        this.lvl = 1;
         this.coutUpgrade = 10;
         this.sens = 5;
         this.idLigne = id;
@@ -41,17 +41,33 @@ public class Train extends Decors{
             }
     }
     
+    public boolean isUp(Joueur j){
+        if(j.getArgent() >= getCoutDeUp()){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+    public int getCoutDeUp(){
+        return 100*lvl*lvl;
+    }
+    
+    public int getLvl(){
+        return this.lvl;
+    }
+    
     public String upgradeTrain(Joueur j){
         if(j.getArgent() >= coutUpgrade){
             j.deduireArgent(coutUpgrade);
-            this.niveau++;
-            this.capacite = capacite*niveau;
+            this.lvl++;
+            this.capacite = capacite*lvl;
             this.charge = new Bien[capacite];
                 for(int i=0;i<charge.length;i++){
                     charge[i] = new Bien("",0,0);
                 }
             this.vitesse++;
-            this.coutUpgrade = 10*niveau*niveau;
+            this.coutUpgrade = 10*lvl*lvl;
             return "Train upgrade";
         }
         return "fond insuffisant";
