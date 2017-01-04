@@ -68,10 +68,9 @@ public class TrainModel {
         listeBien.add(lait);
         listeBien.add(plastique);
         listeBien.add(pot);
-        pot.addComposant(plastique, 10);
         this.joueur = new Joueur();
         
-        pot.addComposant(lait, 10);
+        pot.addComposant(lait, 5);
         pot.addComposant(plastique, 5);
     }
     
@@ -102,7 +101,11 @@ public class TrainModel {
                 //placement ville
                     (i==10 && j==5) || (i==6 && j==7 ) || (i==4 && j==3)
                         ){
-                            m = new Ville(i,j,ville,false,listeBien.get(compteur),this.joueur);
+                            if(compteur < 2){
+                                m = new Ville(i,j,ville,false,listeBien.get(compteur),this.joueur);
+                            }else {
+                                m = new Usine(i,j,ville,false,listeBien.get(compteur),this.joueur);
+                            }
                             compteur++;
                             listeDecors.add(m);
                             listeVille.add((Ville) m);
@@ -254,7 +257,6 @@ public class TrainModel {
         int j = t.getY();
         int x = 0;
         int y = 0;
-        System.out.println("new sens ="+t.getNewSens());
         if( ( getCase(i+1,j) == t.getSens() ) ){
             if( ((Rail) getDecors(i+1,j)).getId() == t.getIdLigne() ){
                 x = i+1;
@@ -310,7 +312,23 @@ public class TrainModel {
             }
         }else if(getCase(i+1,j)==2 || getCase(i-1,j)==2 || getCase(i,j+1)==2 || getCase(i,j-1)==2){
             t.changerSens();
-            System.out.println("tombé sur une ville");
+            Ville v;
+            if(getCase(i+1,j)==2){
+                v = (Ville) getDecors(i+1,j);
+                v.decharger(t);
+            }
+            if(getCase(i-1,j)==2){
+                v = (Ville) getDecors(i-1,j);
+                v.decharger(t);
+            }
+            if(getCase(i,j+1)==2){
+                v = (Ville) getDecors(i,j+1);
+                v.decharger(t);
+            }
+            if(getCase(i,j-1)==2){
+                v = (Ville) getDecors(i,j-1);
+                v.decharger(t);
+            }
         }
         avertirAllObservateurs();
         

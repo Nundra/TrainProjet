@@ -64,11 +64,47 @@ public class Ville extends Decors{
         return typeRessource;
     }
     
-    public void charger() {
-        
+    public void charger(Train t) {
+        int compteur = 0;
+        while(!t.isFull()){
+            for(Bien b:stock){
+                if(b.getQuantite() > 0){
+                    t.addCharge(new Bien(b.getNom(),1,b.getValeur()));
+                    b.produire(-1);
+                }else{
+                    compteur++;
+                }
+            }
+            if(compteur >= t.getCharge().length){
+                break;
+            }
+        }
     }
     
-    public void decharger() {
+    public void decharger(Train t) {
+        Bien[] temp = t.getCharge();
+        if(t.isCharged()){
+            for(int i = 0; i<temp.length;i++){
+                if(temp[i] != null){
+                    for(Bien b:stock){
+                        if(b.getNom().equals(temp[i].getNom())){
+                            b.produire(1);
+                            temp[i]=null;
+                            break;
+                        }
+                    }
+                    if(temp[i] != null){
+                        stock.add(temp[i]);
+                        temp[i]=null;
+                    }
+                }
+            }
+        }
         
+        charger(t);
+    }
+    
+    public Joueur getJ(){
+        return this.j;
     }
 }

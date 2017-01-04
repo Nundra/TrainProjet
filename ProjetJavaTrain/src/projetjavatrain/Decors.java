@@ -6,6 +6,7 @@
 package projetjavatrain;
 
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 /**
  *
@@ -17,6 +18,7 @@ public class Decors {
     private Image img;
     private boolean editable;
     private boolean valide;
+    private ImageView view;
     
     public Decors(int x, int y, Image img, boolean b){
         this.x=x;
@@ -24,6 +26,7 @@ public class Decors {
         this.img=img;
         this.editable=b;
         valide = false;
+        this.view = new ImageView(img);
     }
 
     /**
@@ -59,6 +62,7 @@ public class Decors {
      */
     public void setImg(Image img) {
         this.img = img;
+        this.view.setImage(img);
     }
 
     /**
@@ -94,5 +98,19 @@ public class Decors {
      */
     public void setY(int y) {
         this.y = y;
+    }
+
+    /**
+     * @return the view
+     */
+    public ImageView getView() {
+        return view;
+    }
+
+    /**
+     * @param view the view to set
+     */
+    public void setView(ImageView view) {
+        this.view = view;
     }
 }

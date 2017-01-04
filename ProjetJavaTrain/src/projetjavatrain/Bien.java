@@ -39,13 +39,14 @@ public class Bien {
         composantValid.add(false);
     }
     
-    public boolean estFaisable(Ville v){
+    public boolean estFaisable(Usine u){
         boolean bool = true;
         for(Bien b:composant){
-            for(Bien b2:v.getStock()){
-                if(b == b2){
-                    if(b2.quantite == composantQt.get(composant.indexOf(b))){
+            for(Bien b2:u.getDepot()){
+                if(b.getNom().equals(b2.getNom())){
+                    if(b2.quantite >= composantQt.get(composant.indexOf(b))){
                         composantValid.set((composant.indexOf(b)), true);
+                        System.out.println("set true");
                     }
                 }
             }
@@ -54,17 +55,29 @@ public class Bien {
         for(boolean bool2:composantValid){
             if(bool2 == false)bool = bool2;
         }
+        composantValid.clear();
+        for(Bien b:composant){
+            composantValid.add(false);
+        }
+        System.out.println("faisable "+bool);
         return bool;
     }
     
     public int getQtNeeded(Bien b){
+        int total = 0;
         for(Bien b2:composant){
             if(b2.getNom().equals(b.getNom())){
-                return composantQt.get(composant.indexOf(b2));
+                total = (composantQt.get(composant.indexOf(b2)));
             }
-            break;
         }
-        return 0;
+        return total;
+    }
+    
+    public Boolean need(Bien b){
+        for(Bien b2:composant){
+            if(b2.getNom().equals(b.getNom()))return true;
+        }
+        return false;
     }
     
     /**
@@ -93,6 +106,9 @@ public class Bien {
      */
     public void setQuantite(int quantite) {
         this.quantite = quantite;
+    }
+    public void retirerQuantite(int qt) {
+        this.quantite = quantite - qt;
     }
 
     void produire(int i) {

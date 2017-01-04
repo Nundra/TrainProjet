@@ -13,43 +13,66 @@ import javafx.scene.image.Image;
  * @author Nicolas
  */
 public class Usine extends Ville{
-
-    private Bien typeRessource;
-    private ArrayList<Bien> stock;
     private ArrayList<Bien> depot;
-    private int vitesse;
-    private int lvl;
-    private Joueur j;
 
     public Usine(int x, int y, Image img, boolean b, Bien bien, Joueur j) {
         super(x, y, img, b, bien, j);
         depot = new ArrayList<>();
-        vitesse = 1;
-        lvl = 1;
-        this.typeRessource = bien;
-        stock.add(typeRessource);
-        this.j=j;
     }
     
     @Override
     public void produire() {
-        if (typeRessource.estFaisable(this)) {
-            for (Bien b:stock) {
-                b.setQuantite(b.getQuantite()-b.getQtNeeded(typeRessource));
-                b.produire(5);
+        if (getTypeRessource().estFaisable(this)) {
+            for (Bien b:depot) {
+                b.retirerQuantite(getTypeRessource().getQtNeeded(b));
             }
+            getTypeRessource().produire(5);
+            System.out.println("pot produit");
+            System.out.println("pot "+getTypeRessource().getQuantite());
         }
-        j.upScore(typeRessource);
+        getJ().upScore(getTypeRessource());
     }
     
     @Override
     public void decharger(Train t) {
-        for (Bien b:t.getCharge()) {
-            if (b == typeRessource) {
-                
+        Bien[] temp = t.getCharge();
+        if(t.isCharged()){
+            for(int i = 0; i<temp.length;i++){
+                if(temp[i] != null){
+                    if(getTypeRessource().need(temp[i])){
+                            for(Bien b:depot){
+                                if(b.getNom().equals(temp[i].getNom())){
+                                    b.produire(1);
+                                    temp[i]=null;
+                                    break;
+                                }
+                            }
+                            if(temp[i] != null){
+                                depot.add(temp[i]);
+                                temp[i]=null;
+                            }
+                    }else{
+                        for(Bien b:getStock()){
+                            if(b.getNom().equals(temp[i].getNom())){
+                                b.produire(1);
+                                temp[i]=null;
+                                break;
+                            }
+                        }
+                        if(temp[i] != null){
+                            getStock().add(temp[i]);
+                            temp[i]=null;
+                        }
+                    }
+                }
             }
         }
+        
+        charger(t);
     }
-
+    
+    public ArrayList<Bien> getDepot(){
+        return this.depot;
+    }
 
 }

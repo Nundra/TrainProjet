@@ -36,6 +36,9 @@ public class Train extends Decors{
         this.idLigne = id;
         deplace = false;
         this.charge = new Bien[capacite];
+            for(int i=0;i<charge.length;i++){
+                charge[i] = null;
+            }
     }
     
     public String upgradeTrain(Joueur j){
@@ -43,6 +46,10 @@ public class Train extends Decors{
             j.deduireArgent(coutUpgrade);
             this.niveau++;
             this.capacite = capacite*niveau;
+            this.charge = new Bien[capacite];
+                for(int i=0;i<charge.length;i++){
+                    charge[i] = new Bien("",0,0);
+                }
             this.vitesse++;
             this.coutUpgrade = 10*niveau*niveau;
             return "Train upgrade";
@@ -51,10 +58,8 @@ public class Train extends Decors{
     }
     
     public void changerSens(){
-        System.out.println("old sens : "+sens);
         if(sens == 6)sens = 5;
             else if(sens == 5) sens = 6;
-        System.out.println("Sens changé à : "+sens);
     }
     
     public int getNewSens(){
@@ -105,5 +110,32 @@ public class Train extends Decors{
      */
     public void setCharge(Bien[] charge) {
         this.charge = charge;
+    }
+    
+    public Boolean isFull(){
+        for(int i = 0; i < charge.length; i++){
+            if(charge[i] == null){
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public Boolean isCharged(){
+        for(int i = 0; i < charge.length; i++){
+            if(charge[i] != null){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public void addCharge(Bien t){
+        for(int i = 0; i < charge.length; i++){
+            if(charge[i] == null){
+                charge[i] = t;
+                break;
+            }
+        }
     }
 }

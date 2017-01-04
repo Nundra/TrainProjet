@@ -44,6 +44,7 @@ public class ProjetJavaTrain extends Application implements Observateur{
     int numRows = 10 ;
     
     ArrayList<Timeline> listeTime = new ArrayList<>();
+    ArrayList<ImageView> listeImg = new ArrayList<>();
     
     static Decors currentDecors;
     
@@ -61,13 +62,28 @@ public class ProjetJavaTrain extends Application implements Observateur{
         for(int i = 0; i<numCols; i++){
             for(int j = 0; j<numRows; j++){
                 Decors d = tm.getDecors(i, j);
-                ImageView img = new ImageView(d.getImg());
+                ImageView img = d.getView();
                 img.setFitWidth(50);
                 img.setPreserveRatio(true);
                 GridPane.setConstraints(img, i, j);
                 grille.getChildren().add(img);
                 img.setOnMouseClicked(new CaseControler(i,j,tm,img));
+                
+                listeImg.add(img);
             }
+        }
+        
+        if(timeline == null){
+            timeline = new Timeline(new KeyFrame(
+                    Duration.millis(1000),
+                    ae -> {
+                        for(Ville v:tm.getListeVille()){
+                            v.produire();
+                        }
+                    }));
+            timeline.setCycleCount(Animation.INDEFINITE);
+            timeline.play();
+            listeTime.add(timeline);
         }
     }
     
@@ -115,20 +131,14 @@ public class ProjetJavaTrain extends Application implements Observateur{
     }
     
     public void update(){
-        grille.getChildren().clear();
-        initMap();
-        if(timeline == null){
-            timeline = new Timeline(new KeyFrame(
-                    Duration.millis(1000),
-                    ae -> {
-                        for(Ville v:tm.getListeVille()){
-                            v.produire();
-                            System.out.println("production");
-                        }
-                    }));
-            timeline.setCycleCount(Animation.INDEFINITE);
-            timeline.play();
-            listeTime.add(timeline);
+        for(int i = 0; i<numCols; i++){
+            for(int j = 0; j<numRows; j++){
+                Decors d = tm.getDecors(i, j);
+                ImageView img = listeImg.get(i*10+j);
+                if(img != d.getView()){
+                    img.setImage(d.getImg());
+                }
+            } 
         }
     }
     
@@ -184,6 +194,8 @@ public class ProjetJavaTrain extends Application implements Observateur{
             t=null;
         }
         listeTime.clear();
+        listeImg.clear();
+        initMap();
         update();
     }
     @Override
@@ -212,7 +224,13 @@ public class ProjetJavaTrain extends Application implements Observateur{
             currentValue1.setText("= "+v.getStock().get(0).getQuantite());
         }
         if(d instanceof Train){
-            
+            Train t = (Train) d;
+            currentElem.setText("Train");
+            Bien[] tab = t.getCharge();
+            currentElem1.setText("Ressource : "+tab[0]+" "
+                    +tab[1]+" "+tab[2]+" "+tab[3]
+                    +" "+tab[4]);
+            currentValue1.setText("");
         }else{
             
         }
