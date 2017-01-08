@@ -41,7 +41,6 @@ public class Bien {
                 if(b.getNom().equals(b2.getNom())){
                     if(b2.quantite >= composantQt.get(composant.indexOf(b))){
                         composantValid.set((composant.indexOf(b)), true);
-                        System.out.println("set true");
                     }
                 }
             }
@@ -54,7 +53,6 @@ public class Bien {
         for(Bien b:composant){
             composantValid.add(false);
         }
-        System.out.println("faisable "+bool);
         return bool;
     }
     

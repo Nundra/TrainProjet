@@ -10,6 +10,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
+import static projetjavatrain.ProjetJavaTrain.tm;
 
 /**
  *
@@ -23,13 +24,14 @@ public class Train extends Decors{
     private int sens;
     private int idLigne;
     private boolean deplace;
-    private Timeline timeline;
+    private KeyFrame timeline;
     private Bien[] charge;
+    private Rail r;
     
     public Train(int x, int y, Image img, boolean b, int id) {
         super(x, y, img, b);
         this.capacite = 5;
-        this.vitesse = 1;
+        this.vitesse = 5;
         this.lvl = 1;
         this.coutUpgrade = 10;
         this.sens = 5;
@@ -41,7 +43,16 @@ public class Train extends Decors{
             }
     }
     
+    public void setRail(Rail r){
+        this.r=r;
+    }
+    public Rail getRail(){
+        return r;
+    }
     public boolean isUp(Joueur j){
+        if(vitesse == 1){
+            return false;
+        }
         if(j.getArgent() >= getCoutDeUp()){
             return true;
         }else{
@@ -58,7 +69,7 @@ public class Train extends Decors{
     }
     
     public String upgradeTrain(Joueur j){
-        if(j.getArgent() >= coutUpgrade){
+        if(isUp(j)){
             j.deduireArgent(coutUpgrade);
             this.lvl++;
             this.capacite = capacite*lvl;
@@ -66,8 +77,8 @@ public class Train extends Decors{
                 for(int i=0;i<charge.length;i++){
                     charge[i] = new Bien("",0,0);
                 }
-            this.vitesse++;
-            this.coutUpgrade = 10*lvl*lvl;
+            this.vitesse--;
+            this.coutUpgrade = 100*lvl*lvl;
             return "Train upgrade";
         }
         return "fond insuffisant";
@@ -102,11 +113,11 @@ public class Train extends Decors{
         deplace = b;
     }
     
-    public void newTimeline(Timeline time){
+    public void newTimeline(KeyFrame time){
         this.timeline=time;
     }
     
-    public Timeline getTimeline(){
+    public KeyFrame getTimeline(){
         return timeline;
     }
     

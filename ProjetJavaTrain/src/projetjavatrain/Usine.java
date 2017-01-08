@@ -27,8 +27,6 @@ public class Usine extends Ville{
                 b.retirerQuantite(getTypeRessource().getQtNeeded(b));
             }
             getTypeRessource().produire(getVitesse()*5);
-            System.out.println("pot produit");
-            System.out.println("pot "+getTypeRessource().getQuantite());
             getJ().upScore(getTypeRessource(),getVitesse());
         }
     }

@@ -31,13 +31,15 @@ public class CaseControler implements EventHandler {
     @Override
     public void handle(Event event) {
         System.out.println("Case cliqué : "+model.getCase(i, j));
-        //System.out.println("pose cliqué : "+i+" "+j);
-        //System.out.println("pose valide : "+model.getDecors(i, j).isValide());
         if(model.getMode().equals("construction")){
             if(model.getDecors(i, j).isEditable() && model.getCase(i, j)==0){
                 model.poserRail(i, j);
             }else if(model.getDecors(i, j).isEditable() && model.getCase(i, j)==3){
                 model.retirerRail(i, j);
+            }
+        }else if(model.getMode().equals("destruction")){
+            if(model.getDecors(i, j) instanceof Rail){
+                model.destruction(i,j);
             }
         }else{
             if(model.getDecors(i, j) instanceof Ville || 
@@ -51,14 +53,3 @@ public class CaseControler implements EventHandler {
         }
     }
 }
-/*new EventHandler<MouseEvent>()
-{
-    @Override
-    public void handle(MouseEvent e)
-    {
-        Node source = (Node)e.getSource() ;
-        Integer colIndex = GridPane.getColumnIndex(source);
-        Integer rowIndex = GridPane.getRowIndex(source);
-        System.out.println("click :"+colIndex+rowIndex);
-    }
-}*/

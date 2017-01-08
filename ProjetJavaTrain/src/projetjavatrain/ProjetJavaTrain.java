@@ -33,37 +33,56 @@ import javafx.util.Duration;
 
 public class ProjetJavaTrain extends Application implements Observateur{
     static TrainModel tm = new TrainModel();
+    
     SplitPane root = new SplitPane();
+//panneau de gauche
     StackPane sp1 = new StackPane();
+//panneau de droite
     StackPane sp2 = new StackPane();
+//ma grille
     GridPane grille = new GridPane();
-    VBox v1 = new VBox(6);
-    HBox h1 = new HBox(2);
-    HBox h2 = new HBox(2);
-    HBox h3 = new HBox(2);
-    int numCols = 15 ;
-    int numRows = 10 ;
-    
-    ArrayList<Timeline> listeTime = new ArrayList<>();
+//Mise en forme de la page de gauche
+    VBox v1 = new VBox();
+    HBox btBox = new HBox();
+    HBox jBox = new HBox();
+    HBox infoVilleTxt = new HBox();
+
+//Gestion des timer
+    ArrayList<KeyFrame> listeKeyFrame = new ArrayList<>();
     ArrayList<ImageView> listeImg = new ArrayList<>();
-    
+    Timeline time = new Timeline();
+
+//Current decors pour l'affichage de l'élément sélectionné
     static Decors currentDecors = null;
-    
-    static Timeline timeline = null;
-        
+
+//tout les éléments textuel
         Label l = new Label("Train Simulator 2017");
+        
         Button bt1 = new Button("Construction");
         Button bt2 = new Button("New game");
-        static Label currentElem = new Label ("Score : "+tm.getJoueur().getScore());
-        static Label currentElem1 = new Label ("Sélectionner un train ou une ville à améliorer");
-        static Button btUpgrade = new Button ("upgrader");
+        Button bt3 = new Button("Destruction de ligne");
         
-        static TextArea allInOne= new TextArea();
+        static Label scoreTxt = new Label ("Score : "+tm.getJoueur().getScore());
+        static Label upTxt = new Label ("Sélectionner un train ou une ville à améliorer");
+        static Button btUpgrade = new Button ("lvl+");
         
+        static ArrayList<TextArea> listeVilleInfoTxt = new ArrayList<>();
+        static TextArea ville1= new TextArea();
+        static TextArea ville2= new TextArea();
+        static TextArea ville3= new TextArea();
     
-    public void initMap(){
-        for(int i = 0; i<numCols; i++){
-            for(int j = 0; j<numRows; j++){
+    public void initMap(int col, int row){
+        for (int i = 0; i < col; i++) {
+            ColumnConstraints colConst = new ColumnConstraints(50);
+            grille.getColumnConstraints().add(colConst);
+        }
+        for (int i = 0; i < row; i++) {
+            RowConstraints rowConst = new RowConstraints(50);
+            grille.getRowConstraints().add(rowConst);         
+        }
+        
+        for(int i = 0; i<col; i++){
+            for(int j = 0; j<row; j++){
                 Decors d = tm.getDecors(i, j);
                 ImageView img = d.getView();
                 img.setFitWidth(50);
@@ -76,40 +95,39 @@ public class ProjetJavaTrain extends Application implements Observateur{
             }
         }
         
-        if(timeline == null){
-            timeline = new Timeline(new KeyFrame(
-                    Duration.millis(5000),
-                    ae -> {
-                        for(Ville v:tm.getListeVille()){
-                            v.produire();
-                        }
-                    }));
-            timeline.setCycleCount(Animation.INDEFINITE);
-            timeline.play();
-            listeTime.add(timeline);
-        }
+        KeyFrame kf = new KeyFrame(
+                Duration.millis(5000),
+                ae -> {
+                    for(Ville v:tm.getListeVille()){
+                        v.produire();
+                    }
+                });
+        time.getKeyFrames().add(kf);
+        time.setCycleCount(Animation.INDEFINITE);
+        time.play();
+        
+        
+        update(col,row);
     }
     
     @Override
     public void start(Stage primaryStage) {
+        sp2.setStyle("-fx-background-image: url('img/bg.jpg')");
         btUpgrade.setDisable(true);
-        allInOne.setEditable(false);
+        ville1.setEditable(false);
+        ville2.setEditable(false);
+        ville3.setEditable(false);
         bt1.setOnAction(new btConsControler(tm,bt1));
         bt2.setOnAction(new btNewController(tm,bt2));
+        bt3.setOnAction(new btDestControler(tm,bt3));
         btUpgrade.setOnAction(new btUpgradeController(tm));
-        for (int i = 0; i < numCols; i++) {
-            ColumnConstraints colConst = new ColumnConstraints(50);
-            grille.getColumnConstraints().add(colConst);
-        }
-        for (int i = 0; i < numRows; i++) {
-            RowConstraints rowConst = new RowConstraints(50);
-            grille.getRowConstraints().add(rowConst);         
-        }
         
-        h1.getChildren().addAll(bt1,bt2);
-        h2.getChildren().addAll(currentElem1,btUpgrade);
+        btBox.getChildren().addAll(bt1,bt2,bt3);
+        jBox.getChildren().addAll(upTxt,btUpgrade);
+        listeVilleInfoTxt.add(ville1);listeVilleInfoTxt.add(ville2);listeVilleInfoTxt.add(ville3);
+        infoVilleTxt.getChildren().addAll(ville1,ville2,ville3);
         
-        v1.getChildren().addAll(l,h1,currentElem,h2,h3,allInOne);
+        v1.getChildren().addAll(l,btBox,scoreTxt,jBox,infoVilleTxt);
         sp1.getChildren().add(v1);
         sp2.getChildren().add(grille);
         root.getItems().addAll(sp1,sp2);
@@ -136,9 +154,9 @@ public class ProjetJavaTrain extends Application implements Observateur{
         launch(args);
     }
     
-    public void update(){
-        for(int i = 0; i<numCols; i++){
-            for(int j = 0; j<numRows; j++){
+    public void update(int col, int row){
+        for(int i = 0; i<col; i++){
+            for(int j = 0; j<row; j++){
                 Decors d = tm.getDecors(i, j);
                 ImageView img = listeImg.get(i*10+j);
                 if(img != d.getView()){
@@ -150,69 +168,62 @@ public class ProjetJavaTrain extends Application implements Observateur{
     
 
     @Override
-    public void avertir() {
-        update();
+    public void avertir(int col, int row) {
+        update(col,row);
     }
     
     @Override
-    public void AvertirNewTimeLine(Train t){
-        int vitesse;
-        if(t.getVitesse()==3){
-            vitesse = 1650;
-        }else{
-            vitesse = 5000 / t.getVitesse();
-        }
-            Timeline time = new Timeline(new KeyFrame(
+    public void avertirNewTimeLine(Train t){
+        int vitesse = t.getVitesse()*1000;
+        
+           KeyFrame kf = new KeyFrame(
                     Duration.millis(vitesse),
                     ae -> {
                         tm.bougerTrain(t);
-                    }));
-            time.setCycleCount(Animation.INDEFINITE);
+                    });
+            t.newTimeline(kf);
+            time.stop();
+            time.getKeyFrames().add(kf);
             time.play();
-            t.newTimeline(time);
-            listeTime.add(time);
     }
     
     @Override
     public void avertirUpdateTimeLine(Train t){
-        Timeline time = listeTime.get(listeTime.indexOf(t.getTimeline()));
-        int vitesse;
-        if(t.getVitesse()==3){
-            vitesse = 1650;
-        }else{
-            vitesse = 5000 / t.getVitesse();
-        }
-            time = new Timeline(new KeyFrame(
+        int vitesse = t.getVitesse()*1000;
+        time.stop();
+        time.getKeyFrames().remove(t.getTimeline());
+        KeyFrame kf = new KeyFrame(
+                    Duration.millis(vitesse),
+                    ae -> {
+                        tm.bougerTrain(t);
+                    });
+        time.getKeyFrames().add(kf);
+        time.play();
+        /*time = new Timeline(new KeyFrame(
                     Duration.millis(vitesse),
                     ae -> {
                         tm.bougerTrain(t);
                     }));
-            time.setCycleCount(Animation.INDEFINITE);
-            time.play();
+            time.setCycleCount(Animation.INDEFINITE);*/
     }
     
     @Override
-    public void avertirNewGame(){
-        for(Timeline t:listeTime){
-            t.stop();
+    public void avertirNewGame(int col, int row){
+        time.stop();
+        for(KeyFrame t:time.getKeyFrames()){
             t=null;
         }
-        listeTime.clear();
+        time.getKeyFrames().clear();
         listeImg.clear();
-        initMap();
-        update();
+        initMap(col,row);
     }
     @Override
     public void avertirPause(){
-        for(Timeline t:listeTime){
-            t.stop();
-        }
+        time.stop();
     }
     @Override
     public void avertirFinPause(){
-        for(Timeline t:listeTime){
-            t.play();
-        }
+        time.play();
     }
     
     @Override
@@ -221,17 +232,15 @@ public class ProjetJavaTrain extends Application implements Observateur{
     }
  
     public static void updateTxtUi(Decors d){
-        String str = "";
         for(Ville v:tm.getListeVille()){
-            str += v.toString();
+            listeVilleInfoTxt.get(tm.getListeVille().indexOf(v)).setText(v.toString());
         }
-        allInOne.setText(str);
         
-        currentElem.setText("Score : "+tm.getJoueur().getScore()+" && Argent : "+tm.getJoueur().getArgent());
+        scoreTxt.setText("Score : "+tm.getJoueur().getScore()+" && Argent : "+tm.getJoueur().getArgent());
         
         if(d instanceof Ville){
             Ville v = (Ville) d;
-            currentElem1.setText(v.getNom()+" lvl "+v.getLvl());
+            upTxt.setText(v.getNom()+" lvl "+v.getLvl());
             btUpgrade.setText("Upgrader "+v.getCoutDeUp());
             if(v.isUp(tm.getJoueur())){
                 btUpgrade.setDisable(false);
@@ -241,7 +250,7 @@ public class ProjetJavaTrain extends Application implements Observateur{
         }
         if(d instanceof Train){
             Train t = (Train) d;
-            currentElem1.setText("Train lvl : "+t.getLvl());
+            upTxt.setText("Train lvl : "+t.getLvl());
             btUpgrade.setText("Upgrader "+t.getCoutDeUp());
             if(t.isUp(tm.getJoueur())){
                 btUpgrade.setDisable(false);

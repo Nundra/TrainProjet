@@ -33,7 +33,6 @@ public class Joueur {
     }
     
     public void upScore(Bien b,int i){
-        System.out.println(""+i);
         score = score + (b.getValeur()*i);
         upArgent(b,i);
     }
