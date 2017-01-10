@@ -39,10 +39,9 @@ public class Ville extends Decors{
     }
     
     public void produire(){
-        for(Bien b:stock){
-            b.produire(vitesse);
-        }
+        typeRessource.produire(vitesse);
         j.upScore(typeRessource,vitesse);
+        j.addHistorique(vitesse,typeRessource);
     }
     
     public ArrayList<Bien> getStock(){
@@ -74,7 +73,7 @@ public class Ville extends Decors{
     }
     
     public int getCoutDeUp(){
-        return 100*lvl*lvl;
+        return 1000*lvl*lvl;
     }
 
     public Bien getTypeRessource() {
@@ -134,7 +133,7 @@ public class Ville extends Decors{
        String str = "";
        str += this.nom+"\nstock : \n";
        for(Bien b:stock){
-           str += b.toString()+"\n";
+           str += b.toStringAll()+"\n";
        }
        return str;
     }

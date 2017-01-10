@@ -18,14 +18,14 @@ public class Joueur {
     
     public Joueur(){
         score = 0;
-        this.argent= 100000;
+        this.argent= 0;
         historiqueProduction = new ArrayList<>();
     }
     
     public void reset(){
         score = 0;
-        argent = 10000;
-        historiqueProduction.clear();
+        argent = 0;
+        getHistoriqueProduction().clear();
     }
     
     public void deduireArgent(int i){
@@ -39,6 +39,24 @@ public class Joueur {
     
     public void upArgent(Bien b,int i){
         setArgent(getArgent() + (b.getValeur()*i));
+    }
+    
+    public void addHistorique(int qt,Bien b){
+        boolean done = false;
+        for(Bien b1:historiqueProduction){
+            if(b1.getNom().equals(b.getNom())){
+                b1.produire(qt);
+                done = true;
+            }
+        }
+        if(!done){
+            historiqueProduction.add(new Bien(b.getNom(),qt,b.getValeur()));
+        }
+    }
+    
+    public void upScoreVille(){
+        score += 1000;
+        deduireArgent(10000);
     }
 
     /**
@@ -56,5 +74,21 @@ public class Joueur {
      */
     public void setArgent(int argent) {
         this.argent = argent;
+    }
+
+    /**
+     * @return the historiqueProduction
+     */
+    public ArrayList<Bien> getHistoriqueProduction() {
+        return historiqueProduction;
+    }
+    
+    @Override
+    public String toString(){
+        String str = "";
+        for(Bien b:historiqueProduction){
+            str += b.toStringAll()+"\n";
+        }
+        return str;
     }
 }

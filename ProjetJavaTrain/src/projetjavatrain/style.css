@@ -1,0 +1,17 @@
+#sp2{
+	-fx-background-image: url('../img/bgAcc.jpg')
+}
+#sp1{
+	-fx-background-image: url('../img/bgSide.jpg')
+}
+#bt2{
+    -fx-text-fill: rgb(255,255,255);
+    -fx-background-color: rgb(38, 38, 38);
+    -fx-border-radius: none;
+    -fx-padding: 3 6 6 6;
+}
+
+#bt2:hover{
+    -fx-text-fill: rgb(38, 38, 38);
+    -fx-background-color: rgb(255,255,255);
+}

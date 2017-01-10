@@ -5,6 +5,7 @@
  */
 package projetjavatrain;
 
+import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 
 /**
@@ -19,4 +20,6 @@ public interface Observateur {
     public abstract void avertirPause();
     public abstract void avertirFinPause();
     public abstract void avertirTxtInterface(Decors d);
+    public abstract void avertirFinBt();
+    public abstract void avertirStartBt(Button bt);
 }

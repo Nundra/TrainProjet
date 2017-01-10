@@ -36,10 +36,12 @@ public class btDestControler  implements EventHandler {
             bt.setText("Destruction de ligne");
             on = false;
             model.avertirFinPauseAllObservateurs();
+            model.avertirFinBtAll();
         }else{
             model.setMode("destruction");
             bt.setText("Fin");
             on = true;
+            model.avertirStartBtAll(bt);
         }
         model.avertirAllObservateurs();
     }

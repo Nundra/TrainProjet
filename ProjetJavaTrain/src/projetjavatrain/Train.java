@@ -27,10 +27,16 @@ public class Train extends Decors{
     private KeyFrame timeline;
     private Bien[] charge;
     private Rail r;
+    Image trainH = new Image("img/trainH.png");
+    Image trainV = new Image("img/trainV.png");
+    Image trainBG = new Image("img/trainBG.png");
+    Image trainBD = new Image("img/trainBD.png");
+    Image trainDH = new Image("img/trainDH.png");
+    Image trainGH = new Image("img/trainGH.png");
     
     public Train(int x, int y, Image img, boolean b, int id) {
         super(x, y, img, b);
-        this.capacite = 5;
+        this.capacite = 10;
         this.vitesse = 5;
         this.lvl = 1;
         this.coutUpgrade = 10;
@@ -61,7 +67,7 @@ public class Train extends Decors{
     }
     
     public int getCoutDeUp(){
-        return 100*lvl*lvl;
+        return 1000*lvl*lvl;
     }
     
     public int getLvl(){
@@ -72,10 +78,10 @@ public class Train extends Decors{
         if(isUp(j)){
             j.deduireArgent(coutUpgrade);
             this.lvl++;
-            this.capacite = capacite*lvl;
+            this.capacite += 4;
             this.charge = new Bien[capacite];
                 for(int i=0;i<charge.length;i++){
-                    charge[i] = new Bien("",0,0);
+                    charge[i] = null;
                 }
             this.vitesse--;
             this.coutUpgrade = 100*lvl*lvl;
@@ -87,6 +93,15 @@ public class Train extends Decors{
     public void changerSens(){
         if(sens == 6)sens = 5;
             else if(sens == 5) sens = 6;
+    }
+    
+    public void adaptImage(){
+        if(r.getOrientation().equals("V"))setImg(trainV);
+        if(r.getOrientation().equals("H"))setImg(trainH);
+        if(r.getOrientation().equals("BG"))setImg(trainBG);
+        if(r.getOrientation().equals("BD"))setImg(trainBD);
+        if(r.getOrientation().equals("DH"))setImg(trainDH);
+        if(r.getOrientation().equals("GH"))setImg(trainGH);
     }
     
     public int getNewSens(){

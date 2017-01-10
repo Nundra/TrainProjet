@@ -15,7 +15,7 @@ public class Bien {
     private String nom;
     private int quantite;
     private int valeur;
-    private ArrayList<Bien> composant;
+    private ArrayList<String> composant;
     private ArrayList<Integer> composantQt;
     private ArrayList<Boolean> composantValid;
     
@@ -28,7 +28,7 @@ public class Bien {
         valeur = _v;
     }
     
-    public void addComposant(Bien b,int qt){
+    public void addComposant(String b,int qt){
         composant.add(b);
         composantQt.add(qt);
         composantValid.add(false);
@@ -36,9 +36,9 @@ public class Bien {
     
     public boolean estFaisable(Usine u){
         boolean bool = true;
-        for(Bien b:composant){
+        for(String b:composant){
             for(Bien b2:u.getDepot()){
-                if(b.getNom().equals(b2.getNom())){
+                if(b.equals(b2.getNom())){
                     if(b2.quantite >= composantQt.get(composant.indexOf(b))){
                         composantValid.set((composant.indexOf(b)), true);
                     }
@@ -50,7 +50,7 @@ public class Bien {
             if(bool2 == false)bool = bool2;
         }
         composantValid.clear();
-        for(Bien b:composant){
+        for(String b:composant){
             composantValid.add(false);
         }
         return bool;
@@ -58,8 +58,8 @@ public class Bien {
     
     public int getQtNeeded(Bien b){
         int total = 0;
-        for(Bien b2:composant){
-            if(b2.getNom().equals(b.getNom())){
+        for(String b2:composant){
+            if(b2.equals(b.getNom())){
                 total = (composantQt.get(composant.indexOf(b2)));
             }
         }
@@ -67,8 +67,8 @@ public class Bien {
     }
     
     public Boolean need(Bien b){
-        for(Bien b2:composant){
-            if(b2.getNom().equals(b.getNom()))return true;
+        for(String b2:composant){
+            if(b2.equals(b.getNom()))return true;
         }
         return false;
     }
@@ -116,7 +116,7 @@ public class Bien {
         return this.nom;
     }
     
-    public ArrayList<Bien> listeComposant(){
+    public ArrayList<String> listeComposant(){
         if(!composant.isEmpty())return composant;
         return null;
     }
@@ -124,6 +124,9 @@ public class Bien {
     
     @Override
     public String toString(){
+        return nom;
+    }
+    public String toStringAll(){
         return nom+" qté : "+quantite;
     }
 }

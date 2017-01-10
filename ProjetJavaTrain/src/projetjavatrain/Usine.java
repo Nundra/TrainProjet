@@ -26,6 +26,8 @@ public class Usine extends Ville{
             for (Bien b:depot) {
                 b.retirerQuantite(getTypeRessource().getQtNeeded(b));
             }
+            
+            getJ().addHistorique(getVitesse()*5,getTypeRessource());
             getTypeRessource().produire(getVitesse()*5);
             getJ().upScore(getTypeRessource(),getVitesse());
         }

@@ -6,6 +6,7 @@
 package projetjavatrain;
 
 import java.util.ArrayList;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
 /**
@@ -14,14 +15,15 @@ import javafx.scene.image.Image;
  */
 public class TrainModel {
 //Taille de la grille
-    int col = 15;
-    int row = 10;
+    private int col = 20;
+    private int row = 15;
     
     private int board[][];
     private String mode;
     private ArrayList<Decors> listeDecors = new ArrayList<>();
     private ArrayList<Ville> listeVille = new ArrayList<>();
     private ArrayList<Train> listeTrain = new ArrayList<>();
+    private ArrayList<Bien> listeBien = new ArrayList<>();
     ArrayList<Observateur> obs;
     
      Decors currentDecors = null;
@@ -29,6 +31,7 @@ public class TrainModel {
     private Joueur joueur = new Joueur();
     
     Image blank = new Image("img/blank.png");
+    Image villeImg = new Image("img/villeLait.png");
     Image villeLaitImg = new Image("img/villeLait.png");
     Image villePotImg = new Image("img/villePot.png");
     Image villePlastiqueImg = new Image("img/villePlastique.png");
@@ -40,18 +43,14 @@ public class TrainModel {
     Image railGH = new Image("img/railGH.png");
     Image valid = new Image("img/valid.png");
     Image train = new Image("img/train.png");
-    Image trainHG = new Image("img/trainHG.png");
-    Image trainHD = new Image("img/trainHD.png");
-    Image trainVH = new Image("img/trainVH.png");
-    Image trainVB = new Image("img/trainVB.png");
     
     private Bien lait = new Bien("lait",1,10);
     private Bien plastique = new Bien("plastique",1,10);
     private Bien pot = new Bien("pot",0,20);
     
-    private Ville villePlastique = new Ville("ville des plastique",7,2,villePlastiqueImg,false,plastique,joueur);
-    private Ville villeLait = new Ville("Ferme du lait ",2,6,villeLaitImg,false,lait,joueur);
-    private Ville villePot = new Usine("Usine de pot",12,7,villePotImg,false,pot,joueur);
+    private Ville villePlastique = new Ville("ville des plastique",3,9,villePlastiqueImg,false,plastique,joueur);
+    private Ville villeLait = new Ville("Ferme du lait ",12,12,villeLaitImg,false,lait,joueur);
+    private Ville villePot = new Usine("Usine de pot",16,2,villePotImg,false,pot,joueur);
     
     ArrayList<Rail> testRailTemp = new ArrayList<>();
     ArrayList<Rail> testRailFinal = new ArrayList<>();
@@ -61,15 +60,21 @@ public class TrainModel {
         this.mode = "game";
         this.board = new int [col][row];
         
-        pot.addComposant(lait, 5);
-        pot.addComposant(plastique, 5);
+        pot.addComposant("lait", 5);
+        pot.addComposant("plastique", 5);
                         listeVille.add(villePlastique);
                             listeVille.add(villePot);
                                 listeVille.add(villeLait);
+        listeBien.add(lait);
+        listeBien.add(plastique);
+        listeBien.add(pot);
     }
     
     public Joueur getJoueur(){
         return this.joueur;
+    }
+    public ArrayList<Bien> getListeBien(){
+        return this.listeBien;
     }
     
     public void newGame(){
@@ -81,27 +86,32 @@ public class TrainModel {
             for(int j = 0; j<row; j++){
                 Decors m = null;
                 if(
-                //placement montagne
-                    (i==2 && j==0) || (i==3 && j==0) || (i==4 && j==0) || (i==5 && j==0) ||
-                    (i==2 && j==3) || (i==3 && j==3) || (i==4 && j==3) || (i==5 && j==3) ||
-                    (i==3 && j==4) || (i==4 && j==4) || (i==5 && j==4) ||
-                    (i==9 && j==5) || (i==10 && j==5) || (i==11 && j==5) ||
-                    (i==9 && j==6) || (i==10 && j==6) || (i==11 && j==6) ||
-                    (i==8 && j==7) || (i==9 && j==7) || (i==10 && j==7) ||
-                    (i==8 && j==8) || (i==9 && j==8) || (i==10 && j==8) ||
-                    (i==8 && j==9) || (i==9 && j==9)
-                        ){
-                            m = new Decors(i,j,blank,false);
-                            board[i][j] = 1;
-                }else if(i==7 && j==2){
+                //placement montagne et eau
+                (i==0) || (i==19) || (j==0) || (j==14) ||
+                (i==5 && j==1) || (i==6 && j==1) || (i==7 && j==1) || (i==8 && j==1) || (i==9 && j==1) || (i==10 && j==1) ||
+                (i==5 && j==6) || (i==6 && j==6) || (i==7 && j==6) || (i==8 && j==6) || (i==9 && j==6) || (i==10 && j==6) ||
+                (i==5 && j==7) || (i==6 && j==7) || (i==7 && j==7) || (i==8 && j==7) || (i==9 && j==7) || (i==10 && j==7) || (i==11 && j==7) ||
+                (i==6 && j==8) || (i==7 && j==8) || (i==8 && j==8) || (i==9 && j==8) || (i==10 && j==8) || (i==11 && j==8) ||
+                (i==7 && j==9) || (i==8 && j==9) || (i==9 && j==9) || (i==10 && j==9) ||
+
+                (i==18 && j==10) || (i==19 && j==10) ||
+                (i==18 && j==11) || (i==19 && j==11) ||
+                (i==18 && j==12) || (i==19 && j==12) ||
+                (i==18 && j==13) || (i==19 && j==13) ||
+                (i==17 && j==14) || (i==18 && j==14) || (i==19 && j==14)
+                
+                ){
+                    m = new Decors(i,j,blank,false);
+                    board[i][j] = 1;
+                }else if((i==3 && j==9)){
                         m = villePlastique;
                         board[i][j] = 2;
                     }
-                    else if(i==12 && j==7){
+                    else if((i==16 && j==2)){
                             m = villePot;
                             board[i][j] = 2;
                         }
-                        else if(i==2 && j==6){
+                        else if((i==12 && j==12)){
                             m = villeLait;
                                 board[i][j] = 2;
                         }
@@ -129,6 +139,16 @@ public class TrainModel {
     public void avertirAllObservateurs(){
         for(Observateur o:obs){
             o.avertir(col,row);
+        }
+    }
+    public void avertirFinBtAll(){
+        for(Observateur o:obs){
+            o.avertirFinBt();
+        }
+    }
+    public void avertirStartBtAll(Button bt){
+        for(Observateur o:obs){
+            o.avertirStartBt(bt);
         }
     }
     public void avertirPauseAllObservateurs(){
@@ -163,6 +183,36 @@ public class TrainModel {
         }
     }
     
+    //REFAIRE AVEC BIEN
+ 
+    public void poseVille(int i, int j, Bien str){
+        listeDecors.remove(getDecors(i,j));
+        Image img = null;
+        Ville v = null;
+        if(str.getNom().equals("pot")){
+            v = new Usine("ville perso",i,j,getImageVille(str), false, new Bien(str.getNom(),0,str.getValeur()), joueur);
+        }else{
+            v = new Ville("ville perso",i,j,getImageVille(str), false, new Bien(str.getNom(),0,str.getValeur()), joueur);
+        }
+        listeDecors.add(v);
+        listeVille.add(v);
+        mode="game";
+        board[i][j]=2;
+        joueur.upScoreVille();
+        avertirFinBtAll();
+        avertirAllObservateurs();
+    }
+    
+    public Image getImageVille(Bien b){
+        Image img = null;
+        for(Ville v:listeVille){
+            if(v.getTypeRessource() == b){
+                return v.getImg();
+            }
+        }
+        return img;
+    }
+    
     public void destruction(int x, int y){
         avertirPauseAllObservateurs();
         Rail r = (Rail) getDecors(x,y);
@@ -188,8 +238,8 @@ public class TrainModel {
     }
     
     public void finConstruction(){
-        for(int i = 0; i<15; i++){
-            for(int j = 0; j<10; j++){
+        for(int i = 0; i<col; i++){
+            for(int j = 0; j<row; j++){
                 if(getCase(i,j)==0){
                         getDecors(i,j).setImg(blank);
                 }
@@ -210,8 +260,8 @@ public class TrainModel {
             }
         }
         
-        for(int i = 0; i<15; i++){
-            for(int j = 0; j<10; j++){
+        for(int i = 0; i<col; i++){
+            for(int j = 0; j<row; j++){
                 if(getCase(i,j)==3){
                     listeDecors.remove(getDecors(i,j));
                     Decors d = new Plaine(i,j,blank,true);
@@ -220,6 +270,7 @@ public class TrainModel {
                 }
             }
         }
+        avertirAllObservateurs();
         avertirFinPauseAllObservateurs();
     }
     
@@ -246,7 +297,9 @@ public class TrainModel {
             }else if(board[i+1][j]==3){
                 board[i][j]=5;
                 i = i+1;
-            }else if(board[i][j-1]==2 || board[i][j+1]==2 || board[i-1][j]==2 || board[i+1][j]==2){
+            }else if((board[i][j-1]==2 || board[i][j+1]==2 || board[i-1][j]==2 || board[i+1][j]==2)
+                    && ((board[i][j-1]==5 || board[i][j+1]==5 || board[i-1][j]==5 || board[i+1][j]==5)
+                    || (board[i][j-1]==2 || board[i][j+1]==2 || board[i-1][j]==2 || board[i+1][j]==2))){
                 close = true;
             }else{
                 break;
@@ -277,7 +330,7 @@ public class TrainModel {
             poserTrain((Train) t,i,j);
         }else{
                 for(Rail dTemp:testRailTemp){
-                    board[dTemp.getX()][dTemp.getY()] = 0;
+                    board[dTemp.getX()][dTemp.getY()] = 3;
                 }
                 testRailTemp.clear();
             }
@@ -289,6 +342,7 @@ public class TrainModel {
         listeDecors.remove(t.getRail());
         listeDecors.add(t);
         board[i][j]=10;
+        t.adaptImage();
         avertirAllObservateurs();
     }
     
@@ -369,6 +423,7 @@ public class TrainModel {
                 v.decharger(t);
             }
         }
+        t.adaptImage();
         avertirAllObservateurs();
         
     }
@@ -382,85 +437,77 @@ public class TrainModel {
             if(board[i-1][j]==3){
                 Rail d2 = (Rail) getDecors(i-1,j);
                 if(!d2.estTeste()){
-                    d.setupChemin(i-1, j, i-1, j);
                     setCaseAutour(i-1,j,false);
                     d2.setEditable(false);
                         if(board[i-1][j-1] == 3 || board[i-1][j-1] == 2){
                             d2.setImg(railDH);
-                            d2.setupChemin(i-1,j-1,i,j);
+                            d2.setOrientation("DH");
                         }
                         if(board[i-1][j+1] == 3 || board[i-1][j+1] == 2){
                             d2.setImg(railBD);
-                            d2.setupChemin(i-1,j+1,i,j);
+                            d2.setOrientation("BD");
                         }
                         if(board[i-2][j] == 3 || board[i-2][j] == 2){
                             d2.setImg(railH);
-                            d2.setupChemin(i-2,j,i,j);
+                            d2.setOrientation("H");
                         }
-                    d2.setTeste(true);
                 }
             }
             if(board[i+1][j]==3){
                 Rail d2 = (Rail) getDecors(i+1,j);
                 if(!d2.estTeste()){
-                    d.setupChemin(i+1, j, i+1, j);
                     setCaseAutour(i+1,j,false);
                     d2.setEditable(false);
                         if(board[i+1][j-1] == 3 || board[i+1][j-1] == 2){
                             d2.setImg(railGH);
-                            d2.setupChemin(i+1,j-1,i,j);
+                            d2.setOrientation("GH");
                         }
                         if(board[i+1][j+1] == 3 || board[i+1][j+1] == 2){
                             d2.setImg(railBG);
-                            d2.setupChemin(i+1,j+1,i,j);
+                            d2.setOrientation("BG");
                         }
                         if(board[i+2][j] == 3 || board[i+2][j] == 2){
                             d2.setImg(railH);
-                            d2.setupChemin(i+2,j,i,j);
+                            d2.setOrientation("H");
                         }
-                    d2.setTeste(true);
                 }
             }
             if(board[i][j-1]==3){
                 Rail d2 = (Rail) getDecors(i,j-1);
                 if(!d2.estTeste()){
-                    d.setupChemin(i, j-1, i, j-1);
                     setCaseAutour(i,j-1,false);
                     d2.setEditable(false);
                         if(board[i-1][j-1] == 3 || board[i-1][j-1] == 2){
                             d2.setImg(railBG);
-                            d2.setupChemin(i-1,j-1,i,j);
+                            d2.setOrientation("BG");
                         }
                         if(board[i+1][j-1] == 3 || board[i+1][j-1] == 2){
                             d2.setImg(railBD);
-                            d2.setupChemin(i+1,j-1,i,j);
+                            d2.setOrientation("BD");
                         }
                         if(board[i][j-2] == 3 || board[i][j-2] == 2){
                             d2.setImg(railV);
-                            d2.setupChemin(i,j-2,i,j);
+                            d2.setOrientation("V");
                         }
-                    d2.setTeste(true);
                 }
             }
             if(board[i][j+1]==3){
                 Rail d2 = (Rail) getDecors(i,j+1);
                 if(!d2.estTeste()){
-                d.setupChemin(i, j+1, i, j+1);
                 setCaseAutour(i,j+1,false);
                 d2.setEditable(false);
                     if(board[i-1][j+1] == 3 || board[i-1][j+1] == 2){
                         d2.setImg(railGH);
-                        d2.setupChemin(i-1,j+1,i,j);
+                            d2.setOrientation("GH");
                     }
                     if(board[i+1][j+1] == 3 || board[i+1][j+1] == 2){
                         d2.setImg(railDH);
-                        d2.setupChemin(i+1,j+1,i,j);
+                            d2.setOrientation("DH");
                     }
                     if(board[i][j+2] == 3 || board[i][j+2] == 2){
                         d2.setImg(railV);
-                        d2.setupChemin(i,j+2,i,j);
+                            d2.setOrientation("V");
                     }
-                    d2.setTeste(true);
                 }
             }
         avertirAllObservateurs();
@@ -499,26 +546,26 @@ public class TrainModel {
             if(board[i-1][j]==0){
                 getDecors(i-1,j).setEditable(bool);
                 if(bool && (testRail(i-1,j)==val))getDecors(i-1,j).setImg(valid);
-                if(testRail(i-1,j)>val)getDecors(i-1,j).setEditable(false);
-                if(!bool)getDecors(i-1,j).setImg(blank);
+                    else if(testRail(i-1,j)>val)getDecors(i-1,j).setEditable(false);
+                        else if(!bool)getDecors(i-1,j).setImg(blank);
             }
             if(board[i+1][j]==0){
                 getDecors(i+1,j).setEditable(bool);
                 if(bool && (testRail(i+1,j)==val))getDecors(i+1,j).setImg(valid);
-                if(testRail(i+1,j)>val)getDecors(i+1,j).setEditable(false);
-                if(!bool)getDecors(i+1,j).setImg(blank);
+                    else if(testRail(i+1,j)>val)getDecors(i+1,j).setEditable(false);
+                        else if(!bool)getDecors(i+1,j).setImg(blank);
             }
             if(board[i][j-1]==0){
                 getDecors(i,j-1).setEditable(bool);
                 if(bool && (testRail(i,j-1)==val))getDecors(i,j-1).setImg(valid);
-                if(testRail(i,j-1)>val)getDecors(i,j-1).setEditable(false);
-                if(!bool)getDecors(i,j-1).setImg(blank);
+                    else if(testRail(i,j-1)>val)getDecors(i,j-1).setEditable(false);
+                        else if(!bool)getDecors(i,j-1).setImg(blank);
             }
             if(board[i][j+1]==0){
                 getDecors(i,j+1).setEditable(bool);
                 if(bool && (testRail(i,j+1)==val))getDecors(i,j+1).setImg(valid);
-                if(testRail(i,j+1)>val)getDecors(i,j+1).setEditable(false);
-                if(!bool)getDecors(i,j+1).setImg(blank);
+                    else if(testRail(i,j+1)>val)getDecors(i,j+1).setEditable(false);
+                        else if(!bool)getDecors(i,j+1).setImg(blank);
             }
         if(compteur >1){
             getDecors(i,j).setEditable(false);
@@ -540,36 +587,58 @@ public class TrainModel {
     
     public Rail orienterRail(int i, int j){
         Image img = railV;
+        String str = "V";
         if(board[i-1][j] == 2){
             if(board[i][j-1]== 3){
                 img = (railGH);
+                str = "GH";
             }else if(board[i][j+1]==3){
                 img = railBG;
-            }else img =  railH;
-        }
-        if(board[i+1][j] == 2){
+                str = "BG";
+            }else {
+                img =  railH;
+                str = "H";
+            }
+        }else if(board[i+1][j] == 2){
             if(board[i][j-1]==3){
                 img =  railDH;
+                str = "DH";
             }else if(board[i][j+1]==3){
                 img = railBD;
-            }else img = railH;
-        }
-        if(board[i][j-1] == 2){
+                str = "BD";
+            }else {
+                img = railH;
+                str = "H";
+            }
+        }else if(board[i][j-1] == 2){
             if(board[i-1][j]==3){
                 img = railGH;
+                str = "GH";
             }else if(board[i+1][j]==3){
                 img = railDH;
-            }else img = railV;
-        }
-        if(board[i][j+1] == 2){
+                str = "DH";
+            }else {
+                img = railV;
+                str = "V";
+            }
+        }else if(board[i][j+1] == 2){
             if(board[i-1][j]==3){
                 img = railBG;
+                str = "BG";
             }else if(board[i+1][j]==3){
                 img = railBD;
-            }else img = railV;
+                str = "BD";
+            }else {
+                img = railV;
+                str = "V";
+            }
+        }else if(board[i-1][j] == 3 || board[i+1][j] == 3){
+            img = railH;
+            str = "H";
         }
-        if(board[i-1][j] == 3 || board[i+1][j] == 3)img = railH;
-        return new Rail(i,j,img,true);
+        Rail r = new Rail(i,j,img,true);
+        r.setOrientation(str);
+        return r;
     }
     
     public Decors getDecors(int i, int j){
@@ -603,5 +672,12 @@ public class TrainModel {
      */
     public ArrayList<Ville> getListeVille() {
         return listeVille;
-    } 
+    }
+    
+    public int getCol(){
+        return col;
+    }
+    public int getRow(){
+        return row;
+    }
 }

@@ -17,7 +17,6 @@ public class Decors {
     private int y;
     private Image img;
     private boolean editable;
-    private boolean valide;
     private ImageView view;
     
     public Decors(int x, int y, Image img, boolean b){
@@ -25,7 +24,6 @@ public class Decors {
         this.y=y;
         this.img=img;
         this.editable=b;
-        valide = false;
         this.view = new ImageView(img);
     }
 
@@ -73,20 +71,6 @@ public class Decors {
     }
 
     /**
-     * @return the valide
-     */
-    public boolean isValide() {
-        return valide;
-    }
-
-    /**
-     * @param valide the valide to set
-     */
-    public void setValide(boolean valide) {
-        this.valide = valide;
-    }
-
-    /**
      * @param x the x to set
      */
     public void setX(int x) {
@@ -112,5 +96,10 @@ public class Decors {
      */
     public void setView(ImageView view) {
         this.view = view;
+    }
+    
+    @Override
+    public String toString(){
+        return "i"+getX()+"j"+getY();
     }
 }

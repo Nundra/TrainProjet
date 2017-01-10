@@ -13,12 +13,12 @@ import javafx.scene.control.Button;
  *
  * @author Nundra
  */
-public class btConsControler implements EventHandler {
+public class btPoseControler implements EventHandler {
     private TrainModel model;
     private static Button bt;
     private static Boolean on;
     
-    public btConsControler(TrainModel m, Button bt) {
+    public btPoseControler(TrainModel m, Button bt) {
         this.model=m;
         this.bt=bt;
         this.on = false;
@@ -26,23 +26,20 @@ public class btConsControler implements EventHandler {
     
     public static void reset(){
         on = false;
-        bt.setText("Construction");
+        bt.setText("Créer la ville");
     }
     
     @Override
     public void handle(Event event) {
         if(on){
             model.setMode("game");
-            bt.setText("Construction");
+            bt.setText("Créer la ville");
             on = false;
-            model.finConstruction();
             model.avertirFinBtAll();
         }else{
-            System.out.println("construction started");
-            model.setMode("construction");
-            bt.setText("Fin");
+            model.setMode("pose");
+            bt.setText("Annuler");
             on = true;
-            model.startConstruction();
             model.avertirStartBtAll(bt);
         }
         model.avertirAllObservateurs();

@@ -12,23 +12,22 @@ import javafx.scene.image.Image;
  * @author Nundra
  */
 public class Rail extends Decors{
-    private int chemin[];
     private static int idTotal;
     private int id;
     private boolean railTeste; // servira a tester une ligne de rail
+    private String orientation;
     
     public Rail(int x, int y, Image img, boolean b) {
         super(x, y, img, b);
         this.id = 0;
-        this.chemin = new int[4];
         this.railTeste = false;
     }
-
-    public void setupChemin(int i,int j,int x,int y){
-        if(i != -1)this.chemin[0]=i;
-        if(j != -1)this.chemin[1]=j;
-        if(x != -1)this.chemin[2]=x;
-        if(y != -1)this.chemin[3]=y;
+    
+    public void setOrientation(String str){
+        this.orientation=str;
+    }
+    public String getOrientation(){
+        return orientation;
     }
     
     public void updateId(){
@@ -57,13 +56,6 @@ public class Rail extends Decors{
         this.id = id;
     }
 
-    /**
-     * @return the chemin
-     */
-    public int[] getChemin() {
-        return chemin;
-    }
-    
     public boolean estTeste(){
         return this.railTeste;
     }

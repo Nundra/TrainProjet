@@ -5,8 +5,6 @@
  */
 package projetjavatrain;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.image.ImageView;
@@ -30,7 +28,9 @@ public class CaseControler implements EventHandler {
 
     @Override
     public void handle(Event event) {
-        System.out.println("Case cliqué : "+model.getCase(i, j));
+        System.out.println("Case cliqué : "+model.getCase(i, j)+" - i"+i+",j"+j);
+        System.out.println("image cliqué : "+model.getDecors(i, j).getImg());
+        System.out.println(model.getDecors(i,j).isEditable());
         if(model.getMode().equals("construction")){
             if(model.getDecors(i, j).isEditable() && model.getCase(i, j)==0){
                 model.poserRail(i, j);
@@ -40,6 +40,11 @@ public class CaseControler implements EventHandler {
         }else if(model.getMode().equals("destruction")){
             if(model.getDecors(i, j) instanceof Rail){
                 model.destruction(i,j);
+            }
+        } else if(model.getMode().equals("pose")){
+            if(model.getCase(i, j)==0){
+                Bien str = ProjetJavaTrain.cmb.getSelectionModel().getSelectedItem();
+                model.poseVille(i,j,str);
             }
         }else{
             if(model.getDecors(i, j) instanceof Ville || 
